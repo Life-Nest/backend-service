@@ -12,3 +12,19 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Parent {
+  id  Int @id  @default(autoincrement())
+  name  String  @db.VarChar(50)
+  email String  @db.VarChar(50)
+  password_hash  String  @db.VarChar(50)
+  national_id  BigInt
+  phone_number  String  @db.VarChar(50)
+  city  String  @db.VarChar(50)
+  address  String  @db.VarChar(50)
+  longitude  Float
+  latitude  Float
+  accuracy  Float
+  created_at  DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+}
