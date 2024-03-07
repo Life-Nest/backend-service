@@ -64,6 +64,22 @@ model Reservation {
     incubator_id  Int  @unique
 }
 
+model Hospital {
+    id  Int  @id  @default(autoincrement())
+    name  String  @db.VarChar(50)
+    type  String  @db.VarChar(50)
+    phone_number  String  @db.VarChar(50)
+    city  String  @db.VarChar(50)
+    address  String  @db.VarChar(50)
+    longitude  Float
+    latitude  Float
+    accuracy  Float
+    created_at  DateTime  @default(now())
+    updated_at  DateTime  @updatedAt
+    incubators  Incubator[]
+    hospitalStaff  HospitalStaff[]
+}
+
 model Incubator {
     id  Int  @id  @default(autoincrement())
     name  String  @db.VarChar(50)
@@ -72,6 +88,8 @@ model Incubator {
     rent_per_day  Float
     created_at  DateTime  @default(now())
     updated_at  DateTime  @updatedAt
+    hospital  Hospital  @relation(fields: [hospital_id], references: [id])
+    hospital_id  Int
     requests  Request[]
     reservations  Reservation[]
 }
@@ -84,4 +102,6 @@ model HospitalStaff {
     role  String  @db.VarChar(50)
     created_at  DateTime  @default(now())
     updated_at  DateTime  @updatedAt
+    hospital  Hospital  @relation(fields: [hospital_id], references: [id])
+    hospital_id  Int
 }
