@@ -42,6 +42,8 @@ model Request {
     create_at  DateTime  @default(now())
     parent  Parent  @relation(fields: [parent_id], references: [id])
     parent_id  Int  @unique
+    incubator  Incubator  @relation(fields: [incubator_id], references: [id])
+    incubator_id  Int
 }
 
 model Reservation {
@@ -58,6 +60,20 @@ model Reservation {
     updated_at  DateTime  @updatedAt
     parent  Parent  @relation(fields: [parent_id], references: [id])
     parent_id  Int  @unique
+    incubator  Incubator  @relation(fields: [incubator_id], references: [id])
+    incubator_id  Int  @unique
+}
+
+model Incubator {
+    id  Int  @id  @default(autoincrement())
+    name  String  @db.VarChar(50)
+    type  String  @db.VarChar(50)
+    status  String  @db.VarChar(50)
+    rent_per_day  Float
+    created_at  DateTime  @default(now())
+    updated_at  DateTime  @updatedAt
+    requests  Request[]
+    reservations  Reservation[]
 }
 
 model HospitalStaff {
