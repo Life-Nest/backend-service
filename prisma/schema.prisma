@@ -28,6 +28,7 @@ model Parent {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   requests  Request[]
+  reservations  Reservation[]
 }
 
 model Request {
@@ -43,6 +44,21 @@ model Request {
     parent_id  Int  @unique
 }
 
+model Reservation {
+    id  Int  @id  @default(autoincrement())
+    status  String  @db.VarChar(50)
+    baby_name  String  @db.VarChar(50)
+    baby_age  Int
+    baby_gender  String  @db.VarChar(50)
+    baby_weight  Float
+    birth_hospital  String  @db.VarChar(50)
+    birth_doctor_name  String  @db.VarChar(50)
+    birth_doctor_phone  String  @db.VarChar(50)
+    created_at  DateTime  @default(now())
+    updated_at  DateTime  @updatedAt
+    parent  Parent  @relation(fields: [parent_id], references: [id])
+    parent_id  Int  @unique
+}
 
 model HospitalStaff {
     id  Int  @id  @default(autoincrement())
