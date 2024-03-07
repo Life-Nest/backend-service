@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 import { getParents } from '../services/user.service.js';
 
-router.get('/parents', (req,res)=>{
+router.get('/', (req,res)=>{
     res.send(getParents());
 
 });
