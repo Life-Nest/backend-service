@@ -1,0 +1,34 @@
+version: '1.0'
+
+services:
+  dev-db:
+    image: postgres:16
+    container_name: database-service
+    ports:
+      - 5432:5432
+    networks:
+      - app-stack-network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=dev_db
+
+  app:
+    build: .
+    container_name: backend-service
+    command: sh -c "npm run start"
+    ports:
+      - 3000:3000
+    networks:
+      - app-stack-network
+    environment:
+      DB_HOST: database-service
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: root
+      DB_NAME: dev_db
+
+
+networks:
+  app-stack-network:
+    name: app-stack-network
