@@ -17,12 +17,12 @@ model Parent {
     id  Int  @id  @default(autoincrement())
     name  String  @db.VarChar(50)
     email  String  @db.VarChar(50)
-    password_hash  String  @db.VarChar(50)
-    national_id  BigInt
+    password_hash  String  @db.VarChar(100)
+    national_id  String  @db.VarChar(50)
     phone_number  String  @db.VarChar(50)
     city  String  @db.VarChar(50)
     address  String  @db.VarChar(50)
-    longitude  Float
+    longitude  Float 
     latitude  Float
     accuracy  Float
     created_at  DateTime  @default(now())

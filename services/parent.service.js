@@ -7,4 +7,4 @@ export async function getParents(){
     console.log("parents",parents);
     return parents;
     
-}
+} 
