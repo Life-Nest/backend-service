@@ -4,7 +4,7 @@ import  { body } from'express-validator';
 export const validateRegistration = [
     body('name').notEmpty().withMessage('Name is required').isString(),
     body('email').notEmpty().isEmail().withMessage('Invalid email address').isString(),
-    body('password').notEmpty().withMessage('Password  is required').isString(),
+    body('password').notEmpty().isLength({ min: 8 ,max: 50}).withMessage('Password must be at least 8 characters long'),
     body('national_id').notEmpty().isInt().withMessage('Invalid national ID'),
     body('phone_number').notEmpty().isMobilePhone().withMessage('Invalid phone number'),
     body('city').notEmpty().withMessage('City is required').isString(),
