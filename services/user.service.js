@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import {validationResult} from 'express-validator'
-// Initialize Prisma client
+import { validationResult } from 'express-validator'
+
 const prisma = new PrismaClient();
 export async function getUsers(req, res) {
     const parents = await prisma.parent.findMany();
@@ -19,8 +19,8 @@ export async function getUser(req, res) {
             }
 
         })
-        if(!user)
-            return res.send({message:"user Not found"})
+        if (!user)
+            return res.send({ message: "user Not found" })
         res.send(user);
     } catch (err) {
         res.send(err.message);
@@ -29,25 +29,25 @@ export async function getUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array()[0].msg });
-    }
-    const newData=req.body;
-    let hashedPassword=await bcrypt.hash(newData.password, 10);
-    delete newData.password;
-    newData.password_hash=hashedPassword;
-    const id = parseInt(req.params.id);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array()[0].msg });
+        }
+        const newData = req.body;
+        let hashedPassword = await bcrypt.hash(newData.password, 10);
+        delete newData.password;
+        newData.password_hash = hashedPassword;
+        const id = parseInt(req.params.id);
         const updatedUser = await prisma.parent.update({
             where: {
                 id: id
             },
             data: newData
         });
-        res.send({updatedUser:updatedUser});
+        res.send({ updatedUser: updatedUser });
     } catch (err) {
         res.send(err.message);
-       
+
     }
 }
 
@@ -59,9 +59,9 @@ export async function deleteUser(req, res) {
                 id: id
             }
         });
-        res.send({deleteUser:deletedUser});
+        res.send({ deleteUser: deletedUser });
     } catch (error) {
         console.error('Error deleting user:', error);
-        
+
     }
 }
