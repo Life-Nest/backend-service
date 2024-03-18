@@ -14,7 +14,7 @@ export async function userRegisteration(req, res) {
         }
 
         let hashedPassword = await bcrypt.hash(password, 10);
-        const newParent = await prisma.parent.create({
+        const newParent = await prisma.user.create({
             data: {
                 name: name,
                 email: email,
@@ -41,13 +41,14 @@ export async function userRegisteration(req, res) {
 export async function userLogin(req, res) {
     try {
         const errors = validationResult(req);
+        console.log(errors.array());
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array()[0].msg });
         }
         const { email, password } = req.body;
 
         // Find user by email
-        const user = await prisma.parent.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 email: email
             }
@@ -63,7 +64,7 @@ export async function userLogin(req, res) {
         }
         // Generate JWT
         const token = jwt.sign({ id: user.id, expiresIn: '7d' }, process.env.JWT_SECRETE);
-        res.send(token);
+        res.send({token:token});
     } catch (err) {
         res.status(500).send(err.message);
     }
