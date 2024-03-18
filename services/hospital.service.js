@@ -5,7 +5,7 @@ let prisma = new PrismaClient();
 
 
 export async function updateHospital(req) {
-    const errors = validationResult(req);
+    const errors = validationResult(req); 
     if (!errors.isEmpty()) {
         throw { error: errors.array()[0].msg, code: 400 };
     }
