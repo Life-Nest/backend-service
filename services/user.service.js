@@ -4,7 +4,7 @@ import { validationResult } from 'express-validator'
 
 const prisma = new PrismaClient();
 export async function getUsers(req, res) {
-    const parents = await prisma.parent.findMany();
+    const parents = await prisma.user.findMany();
     res.send(parents);
 }
 
@@ -13,7 +13,7 @@ export async function getUser(req, res) {
     const id = parseInt(req.params.id);
     try {
 
-        const user = await prisma.parent.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 id: id
             }
@@ -38,7 +38,7 @@ export async function updateUser(req, res) {
         delete newData.password;
         newData.password_hash = hashedPassword;
         const id = parseInt(req.params.id);
-        const updatedUser = await prisma.parent.update({
+        const updatedUser = await prisma.user.update({
             where: {
                 id: id
             },
@@ -54,7 +54,7 @@ export async function updateUser(req, res) {
 export async function deleteUser(req, res) {
     const id = parseInt(req.params.id);
     try {
-        const deletedUser = await prisma.parent.delete({
+        const deletedUser = await prisma.user.delete({
             where: {
                 id: id
             }
