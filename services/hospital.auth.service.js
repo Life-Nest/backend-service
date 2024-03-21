@@ -2,14 +2,14 @@ import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
-import {validationResult} from 'express-validator'
+import { validationResult } from 'express-validator'
 
 export async function registration(req) {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      throw { error: errors.array()[0].msg,code:400 };
-  } 
+    throw { error: errors.array()[0].msg, code: 400 };
+  }
   const { email, password, name, type, phone_number, city, address, longitude, latitude, accuracy } = req.body;
   let hashedPassword = await bcrypt.hash(password, 10);
 
@@ -34,7 +34,7 @@ export async function registration(req) {
 export async function login(req) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw { error: errors.array()[0].msg,code:400 };
+    throw { error: errors.array()[0].msg, code: 400 };
   }
   const { email, password } = req.body;
   // Find the hospital by email
@@ -53,7 +53,7 @@ export async function login(req) {
   const token = jwt.sign({ hospitalId: hospital.id }, process.env.JWT_SECRETE, { expiresIn: '7d' });
 
   // Send token in response
-  return {token} ;
+  return { token };
 
 
 }

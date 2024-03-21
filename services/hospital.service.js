@@ -5,7 +5,7 @@ let prisma = new PrismaClient();
 
 
 export async function updateHospital(req) {
-    const errors = validationResult(req); 
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
         throw { error: errors.array()[0].msg, code: 400 };
     }
@@ -27,11 +27,19 @@ export async function updateHospital(req) {
 }
 
 export async function deleteHospital(id) {
-    const deletedHospital = await prisma.hospital.delete({
+    const hospitalExists = await prisma.hospital.findUnique({
         where: { id: parseInt(id) }
     });
-    return { deletedHospital };
+    if (!hospitalExists) {
+        throw { code: 404, error: "Hospital not found" };
+    }
+
+    const deletedHospital = await prisma.hospital.delete({
+        where: { id: parseInt(id) }
+    }) 
+    return deletedHospital ;
 }
+ 
 
 export async function getHospital(id) {
     const hospital = await prisma.hospital.findUnique({
@@ -45,11 +53,11 @@ export async function getHospital(id) {
     return hospital;
 }
 
-
+ 
 export async function getAllHospital() {
     const hospitals = await prisma.hospital.findMany();
 
-    if (hospitals.length===0) {
+    if (hospitals.length === 0) {
         throw { code: 404, error: 'there is no hospitals now' };
     }
 
