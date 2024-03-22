@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "db":"sudo docker start 6c9a284ed80f"
   },
   "keywords": [],
   "author": "",
