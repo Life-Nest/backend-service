@@ -6,4 +6,4 @@ COPY . .
 
 RUN npm install
 
-RUN echo 'DATABASE_URL="postgresql://postgres:root@172.17.0.3:5432/dev_db"' > .env
+RUN echo 'DATABASE_URL="mysql://root:root@database-service:3306/dev_db"' > .env
