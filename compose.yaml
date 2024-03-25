@@ -2,16 +2,15 @@ version: '1.0'
 
 services:
   dev-db:
-    image: postgres:16
+    image: mysql
     container_name: database-service
     ports:
-      - 5432:5432
+      - 3306:3306
     networks:
       - app-stack-network
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=dev_db
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=dev_db
 
   app:
     build: .
@@ -23,8 +22,8 @@ services:
       - app-stack-network
     environment:
       DB_HOST: database-service
-      DB_PORT: 5432
-      DB_USER: postgres
+      DB_PORT: 3306
+      DB_USER: root
       DB_PASSWORD: root
       DB_NAME: dev_db
 
