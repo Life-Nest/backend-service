@@ -12,7 +12,7 @@ app.use('/user/auth', userAuthRoutes);
 app.use('/user', userRoutes);
 app.use('/hospital/auth', hospitalAuthRoutes);
 app.use('/hospital', hospitalRoutes);
-app.use('/api/v1', incubatorRoutes);
+app.use(incubatorRoutes);
 
 app.listen(3000, () => {
   console.log("server is running on port 3000");
