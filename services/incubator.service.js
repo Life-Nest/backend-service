@@ -1,10 +1,20 @@
 import { PrismaClient } from '@prisma/client';
 
-
 const prisma = new PrismaClient();
 
-async function getAllIncubators() {
+
+async function getAllIncubators(hospital_id) { 
   const allIncubators = await prisma.incubator.findMany({
+    where: {
+      hospital_id: hospital_id,
+    },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      status: true,
+      rent_per_day: true,
+    },
     orderBy: {
       name: 'asc',
     },
@@ -14,65 +24,140 @@ async function getAllIncubators() {
 }
 
 
-async function getIncubator(incubatorId) {
+async function getIncubator(payload) {
+  const { hospital_id, incubator_id } = payload;
   const incubator = await prisma.incubator.findUnique({
     where: {
-      id: incubatorId,
+      id: incubator_id,
+      hospital_id: hospital_id,
     },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      status: true,
+      rent_per_day: true,
+    }
   });
 
   if (incubator === null) {
-    return {message: 'Not Found!'};
-  } else {
-    return incubator;
+    return {
+      error: {
+        code: 404,
+        msg: 'Resource Not Found'
+      }
+    }
+  }
+
+  return incubator;;
+}
+
+
+async function checkIncubatorName(hospitalId, name) {
+  const existing = await prisma.incubator.findFirst({
+    where: {
+      hospital_id: hospitalId,
+      name: name,
+    },
+  });
+
+  if (existing) {
+    const error = new Error('An Incubator with that name already exists');
+    error.code = 409;
+    throw error;
   }
 }
 
 
 async function createIncubator(payload) {
-  const rent = payload.rent_per_day;
-  const incubatorData = {
-    name: payload.name,
-    type: payload.type,
-    status: payload.status,
-    rent_per_day: parseFloat(rent) !== parseInt(rent),
-    hospital_id: Number.isInteger(payload.hospital_id)
-  }
+  const { hospital_id, name } = payload;
+  try {
+    await checkIncubatorName(hospital_id, name);
+    const newIncubator = await prisma.incubator.create({
+data: payload
+    });
 
-  return incubatorData;
-  const newIncubator = await prisma.incubator.create({
-    data: {
-      ...payload,
-      hospital: {
-        connect: HospitalCreateWithoutIncubatorsInput,
+    return { msg: 'Incubator created successfully' };
+  } catch (err) {
+    if (err.code === 'P2003') {
+      return {
+        error: {
+          code: 422,
+          msg: 'The request cannot be processed due to a foreign key constraint violation'
+        }
+      }
+    } else if (err.code === 409) {
+      return {
+        error: {
+          code: err.code,
+          msg: err.message
+        }
       }
     }
-  });
 
-  return newIncubator;
+    throw err;
+  }
 }
 
 
-async function updateIncubator(incubatorId, payload) {
-  const updatedIncubator = await prisma.incubator.update({
-    where: {
-      id: incubatorId,
-    },
-    data: payload,
-  });
+async function updateIncubator(payload) {
+  const { incubator_id, hospital_id, ...data } = payload;
+  try {
+    await checkIncubatorName(hospital_id, data.name);
+    const updatedIncubator = await prisma.incubator.update({
+      where: {
+        id: incubator_id,
+        hospital_id: hospital_id
+      },
+      data: data,
+    });
 
-  return updatedIncubator;
+    return { msg: 'Incubator updated successfully' };
+  } catch(err) {
+    if (err.code === 'P2025') {
+      return {
+        error: {
+          code: 404,
+          msg: 'Resource Not Found'
+        }
+      }
+    } else if (err.code === 409) {
+      return {
+        error: {
+          code: err.code,
+          msg: err.message
+        }
+      }
+    }
+
+    throw err;
+  }
 }
 
 
-async function deleteIncubator(incubatorId) {
-  const deletedIncubator = await prisma.incubator.delete({
-    where: {
-      id: incubatorId,
-    },
-  });
+async function deleteIncubator(payload) {
+  const { hospital_id, incubator_id } = payload;
+  try {
+    const deletedIncubator = await prisma.incubator.delete({
+      where: {
+        id: incubator_id,
+        hospital_id,
+      },
+    });
 
-  return deletedIncubator;
+    return { msg: 'Incubator deleted successfully' };
+  } catch(err) {
+    if (err.code === 'P2025') {
+      return {
+        error: {
+          code: 404,
+          msg: 'Resource Not Found'
+        }
+      }
+    }
+
+    throw err;
+  }
 }
 
 
