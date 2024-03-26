@@ -1,78 +1,101 @@
 import express from 'express';
 import {
+  getIncubatorSchema
+} from '../validation/incubator.validation.js';
+import {
+  validationResult,
+  matchedData,
+  checkSchema
+} from 'express-validator';
+import {
   getAllIncubators,
   getIncubator,
   createIncubator,
   updateIncubator,
   deleteIncubator
 } from '../services/incubator.service.js';
+import { serviceHandler } from './handlers.js';
 
+
+const myValidationResult = validationResult.withDefaults({
+  formatter: error => {
+    return { msg: error.msg };
+  }
+});
 
 const router = express.Router();
+const prefix = '/hospitals/:hospital_id/incubators';
+const path = (path) => prefix + path;
 
-router.get('/incubators', (req, res) => {
-  getAllIncubators()
-    .then(async (allIncubators) => {
-      res.json(allIncubators);
-    })
-    .catch(async (error) => {
-      console.error(error);
-      res.json({error: error.message});
-    });
-});
+router.get(
+  path('/'),
+  checkSchema(getIncubatorSchema(true, true)),
+  (req, res) => {
+    const result = myValidationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
 
-router.get('/incubators/:id', (req, res) => {
-  const incubatorId = req.params.id;
+    const data = matchedData(req);
+    serviceHandler(getAllIncubators, data.hospital_id, res);
+  }
+);
 
-  getIncubator(incubatorId)
-    .then(async (incubator) => {
-      res.json(incubator);
-    })
-    .catch(async (error) => {
-      console.error(error);
-      res.json({error: error.message});
-    });
-});
+router.get(
+  path('/:incubator_id'),
+  checkSchema(getIncubatorSchema(false, true)),
+  (req, res) => {
+    const result = myValidationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
 
-router.post('/incubators', (req, res) => {
-  const payload = req.body;
+    const data = matchedData(req);
+    serviceHandler(getIncubator, data, res);
+  }
+);
 
-  createIncubator(payload)
-    .then(async (createdIncubator) => {
-      res.json(createdIncubator);
-    })
-    .catch(async (error) => {
-      console.error(error);
-      res.json({error: error.message});
-    });
-});
+router.post(
+  path('/'),
+  checkSchema(getIncubatorSchema(true, false)),
+  (req, res) => {
+    const result = myValidationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
 
-router.patch('/incubators/:id', (req, res) => {
-  const incubatorId = req.params.id;
-  const payload = req.body;
+    const data = matchedData(req);
+    serviceHandler(createIncubator, data, res);
+  }
+);
 
-  updateIncubator(incubatorId, payload)
-    .then(async (updatedIncubator) => {
-      res.json(updatedIncubator);
-    })
-    .catch(async (error) => {
-      console.error(error);
-      res.json({error: error.message});
-    });
-});
+router.patch(
+  path('/:incubator_id'),
+  checkSchema(getIncubatorSchema(false, true)),
+  (req, res) => {
+    const result = myValidationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
 
-router.delete('/incubator/:id', (req, res) => {
-  const incubatorId = req.params.id;
+    const data = matchedData(req);
+    serviceHandler(updateIncubator, data, res);
+  }
+);
 
-  deleteIncubator(incubatorId)
-    .then(async (deletedIncubator) => {
-      res.json(deletedIncubator);
-    })
-    .catch(async (error) => {
-      console.error(error);
-      res.json({error: error.message});
-    });
-});
+router.delete(
+  path('/:incubator_id'),
+  checkSchema(getIncubatorSchema(false, true)),
+  (req, res) => {
+    const result = myValidationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
+
+    const data = matchedData(req);
+    serviceHandler(deleteIncubator, data, res);
+  }
+);
 
 
 export default router;
