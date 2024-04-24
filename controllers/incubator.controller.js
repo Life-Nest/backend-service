@@ -1,6 +1,8 @@
 import express from 'express';
 import {
-  getIncubatorSchema
+  hospitalId,
+  incubatorId,
+  incubatorSchema
 } from '../validation/incubator.validation.js';
 import {
   validationResult,
@@ -29,7 +31,7 @@ const path = (path) => prefix + path;
 
 router.get(
   path('/'),
-  checkSchema(getIncubatorSchema(true, true)),
+  checkSchema(hospitalId),
   (req, res) => {
     const result = myValidationResult(req);
     if (!result.isEmpty()) {
@@ -43,7 +45,8 @@ router.get(
 
 router.get(
   path('/:incubator_id'),
-  checkSchema(getIncubatorSchema(false, true)),
+  checkSchema(hospitalId),
+  checkSchema(incubatorId),
   (req, res) => {
     const result = myValidationResult(req);
     if (!result.isEmpty()) {
@@ -57,7 +60,8 @@ router.get(
 
 router.post(
   path('/'),
-  checkSchema(getIncubatorSchema(true, false)),
+  checkSchema(hospitalId),
+  checkSchema(incubatorSchema),
   (req, res) => {
     const result = myValidationResult(req);
     if (!result.isEmpty()) {
@@ -71,7 +75,9 @@ router.post(
 
 router.patch(
   path('/:incubator_id'),
-  checkSchema(getIncubatorSchema(false, true)),
+  checkSchema(hospitalId),
+  checkSchema(incubatorId),
+  checkSchema(incubatorSchema),
   (req, res) => {
     const result = myValidationResult(req);
     if (!result.isEmpty()) {
@@ -85,7 +91,8 @@ router.patch(
 
 router.delete(
   path('/:incubator_id'),
-  checkSchema(getIncubatorSchema(false, true)),
+  checkSchema(hospitalId),
+  checkSchema(incubatorId),
   (req, res) => {
     const result = myValidationResult(req);
     if (!result.isEmpty()) {
