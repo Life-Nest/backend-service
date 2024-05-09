@@ -14,6 +14,10 @@ app.use('/hospital/auth', hospitalAuthRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use(incubatorRoutes);
 
+app.get('/', (req, res) => {
+  res.status(200).json({ msg: "Incubator API root endpoint" });
+})
+
 app.listen(3000, () => {
   console.log("server is running on port 3000");
 }); 
