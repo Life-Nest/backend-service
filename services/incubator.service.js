@@ -184,7 +184,9 @@ data: payload
 async function updateIncubator(payload) {
   const { incubator_id, hospital_id, ...data } = payload;
   try {
-    await checkIncubatorName(hospital_id, data.name);
+    if (data.name) {
+      await checkIncubatorName(hospital_id, data.name);
+    }
     const updatedIncubator = await prisma.incubator.update({
       where: {
         id: incubator_id,
