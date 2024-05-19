@@ -18,7 +18,7 @@ const incubatorId = {
   },
 }
 
-const incubatorSchema = {
+const incubatorCreate = {
   name: {
     notEmpty: {
       errorMessage: 'Incubator name must be not empty',
@@ -54,6 +54,11 @@ const incubatorSchema = {
   },
 }
 
+const incubatorUpdate = structuredClone(incubatorCreate);
+Object.keys(incubatorUpdate).forEach(key => {
+  incubatorUpdate[key].optional = true;
+});
+
 const incubatorSearch = {
   longitude: {
     optional: true,
@@ -82,6 +87,7 @@ const incubatorSearch = {
 export {
   hospitalId,
   incubatorId,
-  incubatorSchema,
+  incubatorCreate,
+  incubatorUpdate,
   incubatorSearch,
 }

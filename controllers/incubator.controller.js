@@ -3,7 +3,8 @@ import {
   incubatorSearch,
   hospitalId,
   incubatorId,
-  incubatorSchema
+  incubatorCreate,
+  incubatorUpdate
 } from '../validation/incubator.validation.js';
 import {
   validationResult,
@@ -64,7 +65,7 @@ router.get(
 router.post(
   path('/'),
   checkSchema(hospitalId),
-  checkSchema(incubatorSchema),
+  checkSchema(incubatorCreate),
   (req, res) => {
     const result = myValidationResult(req);
     if (!result.isEmpty()) {
@@ -80,7 +81,7 @@ router.patch(
   path('/:incubator_id'),
   checkSchema(hospitalId),
   checkSchema(incubatorId),
-  checkSchema(incubatorSchema),
+  checkSchema(incubatorUpdate),
   (req, res) => {
     const result = myValidationResult(req);
     if (!result.isEmpty()) {
