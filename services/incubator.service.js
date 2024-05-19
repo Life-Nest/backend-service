@@ -65,7 +65,7 @@ async function getIncubator(payload) {
 }
 
 async function searchIncubator(query) {
-  const { longitude, latitude, city } = query;
+  const { longitude, latitude, city, page } = query;
   const hospitals = await prisma.hospital.findMany({
     select: {
       id: true,
@@ -106,7 +106,9 @@ async function searchIncubator(query) {
   }
   const sortedHospitals = filteredHospitals.sort(compareDistance);
 
-  return filteredHospitals.slice(0, 3);
+  const start = page * 3;
+  const end = start + 3;
+  return filteredHospitals.slice(start, end);
 }
 
 function distance(
