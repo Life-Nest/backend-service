@@ -3,19 +3,17 @@ import express from 'express';
 import {
   userLogin,
   userRegisteration
-} from '../services/user.auth.service.js'
+} from '../services/user.auth.service.js';
 import {
-  validateRegistration
-} from '../validation/parent.registeration.validation.js'
-import {
+  validateRegistration,
   validateLogin
-} from '../validation/login.validation.js'
+} from '../validation/user.auth.validation.js';
 
 
 const router = express.Router();
 
 router.post(
-  '/registration',
+  '/signup',
   validateRegistration,
   userRegisteration
 );
