@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "db":"sudo docker start 6c9a284ed80f"
+    "db": "sudo docker start 6c9a284ed80f"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +20,10 @@
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.0",
     "prisma": "^5.10.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.3.0",
+    "eslint": "^8.57.0",
+    "globals": "^15.3.0"
   }
 }
