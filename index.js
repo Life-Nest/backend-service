@@ -8,10 +8,10 @@ import hospitalRoutes from './controllers/hospital.controller.js';
 const app = express();
 
 app.use(express.json());
-app.use('/user/auth', userAuthRoutes);
-app.use('/user', userRoutes);
-app.use('/hospital/auth', hospitalAuthRoutes);
-app.use('/hospital', hospitalRoutes);
+app.use('/users/auth', userAuthRoutes);
+app.use('/users', userRoutes);
+app.use('/hospitals/auth', hospitalAuthRoutes);
+app.use('/hospitals', hospitalRoutes);
 app.use(incubatorRoutes);
 
 app.get('/', (req, res) => {
