@@ -24,32 +24,56 @@ export async function userRegisteration(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        msg: "validation failed",
-        error: errors.array()[0].msg
+        error: {
+          message: errors.array()[0].msg,
+          field: errors.array()[0].path,
+          code: 400
+        }
       });
     }
 
-    let hashedPassword = await bcrypt.hash(password, 10);
+    const existing = await prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (existing) {
+      return res.status(409).json({
+        error: {
+          message: 'That email is taken. Try another.',
+          field: 'email',
+          code: 409
+        }
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newParent = await prisma.user.create({
       data: {
-        name: name,
-        email: email,
         password_hash: hashedPassword,
-        national_id: national_id,
-        phone_number: phone_number,
-        city: city,
-        address: address,
-        longitude: longitude,
-        latitude: latitude,
-        accuracy: accuracy,
+        name,
+        email,
+        national_id,
+        phone_number,
+        city,
+        address,
+        longitude,
+        latitude,
+        accuracy,
       },
     });
-    res.json({ newParent }).status(201);
+    const token = jwt.sign(
+      { id: newParent.id, role: 'parent' },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    res.status(200).json({ jwt_token: token });
   }
   catch (err) {
     res.status(500).json({
-      msg: 'server Error registeration failed',
-      error: err.message
+      error: {
+        message: err.message,
+        code: 500
+      }
     });
   }
 }
@@ -61,20 +85,27 @@ export async function userLogin(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        msg: 'server Error validation failde',
-        error: errors.array()[0].msg
+        error: {
+          message: errors.array()[0].msg,
+          field: errors.array()[0].path,
+          code: 400
+        }
       });
     }
     const { email, password } = req.body;
 
     // Find user by email
     const user = await prisma.user.findUnique({
-      where: {
-        email: email
-      }
+      where: { email },
     });
     if (!user) {
-      return res.status(404).json({ msg: 'User not found' });
+      return res.status(404).json({
+        error: {
+          message: 'Couldn\'t find your account',
+          field: 'email',
+          code: 404
+        }
+      });
     }
 
     // Check password
@@ -83,19 +114,28 @@ export async function userLogin(req, res) {
       user.password_hash
     );
     if (!validPassword) {
-      return res.status(401).json({ msg: 'Invalid password' });
+      return res.status(401).json({
+        error: {
+          message: 'Wrong password',
+          field: 'password',
+          code: 401
+        }
+      });
     }
 
     // Generate JWT
     const token = jwt.sign(
-      { id: user.id, expiresIn: '7d' },
-      process.env.JWT_SECRETE
+      { id: user.id, role: 'parent' },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
     );
-    res.status(200).json({ token: token });
+    res.status(200).json({ jwt_token: token });
   } catch (err) {
     res.status(500).json({
-      msg: 'server Error login failed',
-      error: err.message
+      error: {
+        message: err.message,
+        code: 500
+      }
     });
   }
 } 

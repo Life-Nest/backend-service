@@ -5,13 +5,15 @@ import userRoutes from './controllers/user.controller.js';
 import incubatorRoutes from './controllers/incubator.controller.js';
 import hospitalAuthRoutes from './controllers/hospital.auth.controller.js';
 import hospitalRoutes from './controllers/hospital.controller.js';
+import searchRoute from './controllers/search.controller.js';
 const app = express();
 
 app.use(express.json());
-app.use('/user/auth', userAuthRoutes);
-app.use('/user', userRoutes);
-app.use('/hospital/auth', hospitalAuthRoutes);
-app.use('/hospital', hospitalRoutes);
+app.use('/users/auth', userAuthRoutes);
+app.use('/users', userRoutes);
+app.use('/hospitals/auth', hospitalAuthRoutes);
+app.use('/hospitals', hospitalRoutes);
+app.use(searchRoute);
 app.use(incubatorRoutes);
 
 app.get('/', (req, res) => {

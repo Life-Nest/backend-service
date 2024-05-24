@@ -5,32 +5,11 @@ import {
 import {
   updateHospital,
   deleteHospital,
-  getHospital,
-  getAllHospital
+  getHospital
 } from '../services/hospital.service.js';
 
 
 const router = express.Router();
-
-router.get(
-  '/',
-  (req, res) => {
-    getAllHospital(req)
-      .then(hospitals => {
-        res.status(200).json({hospitals});
-      })
-      .catch(err => {
-        const { code, error } = err;
-        if (error) {
-          return res.status(code).json({ error });
-        }
-        res.status(500).json({
-          msg: "Server Error Geting all the user failed",
-          error: err.message
-        });
-      });
-  }
-);
 
 router.get(
   '/:id',

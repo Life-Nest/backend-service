@@ -9,18 +9,21 @@ export const validateRegistration = [
   body('email')
     .notEmpty()
     .isEmail()
-    .withMessage('Invalid email address')
-    .isString(),
+    .withMessage('Invalid email address'),
   body('password')
     .notEmpty()
+    .isString()
     .isLength({ min: 8, max: 50 })
     .withMessage('Password must be at least 8 characters long'),
   body('national_id')
     .notEmpty()
-    .isInt()
+    .isString()
+    .isNumeric()
     .withMessage('Invalid national ID'),
   body('phone_number')
     .notEmpty()
+    .isString()
+    .withMessage('Phone number should be a string')
     .isMobilePhone()
     .withMessage('Invalid phone number'),
   body('city')
@@ -34,13 +37,27 @@ export const validateRegistration = [
   body('longitude')
     .notEmpty()
     .isFloat()
+    .toFloat()
     .withMessage('Invalid longitude'),
   body('latitude')
     .notEmpty()
     .isFloat()
+    .toFloat()
     .withMessage('Invalid latitude'),
   body('accuracy')
     .notEmpty()
     .isFloat()
+    .toFloat()
     .withMessage('Invalid accuracy')
+];
+
+export const validateLogin = [
+  body('email')
+    .isEmail()
+    .withMessage('Invalid email address'),
+  body('password')
+    .notEmpty()
+    .isString()
+    .isLength({ min: 8, max: 50 })
+    .withMessage('Invalid password')
 ];

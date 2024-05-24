@@ -66,14 +66,3 @@ export async function getHospital(id) {
 
   return hospital;
 }
-
-export async function getAllHospital() {
-  const hospitals = await prisma.hospital.findMany();
-  if (hospitals.length === 0) {
-    throw { code: 404, error: 'there is no hospitals now' };
-  }
-
-  return hospitals;
-}
-
-
