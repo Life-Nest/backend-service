@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-  incubatorSearch,
   hospitalId,
   incubatorId,
   incubatorCreate,
@@ -14,8 +13,6 @@ import {
 import {
   getAllIncubators,
   getIncubator,
-  searchIncubator,
-  allIncs,
   createIncubator,
   updateIncubator,
   deleteIncubator
@@ -107,33 +104,6 @@ router.delete(
     serviceHandler(deleteIncubator, data, res);
   }
 );
-
-router.get(
-  '/incubators',
-  checkSchema(incubatorSearch, ['query']),
-  (req, res) => {
-    const result = myValidationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
-    }
-
-    const data = matchedData(req);
-    serviceHandler(searchIncubator, data, res);
-  }
-);
-
-/* Temporary route for testing purposes */
-router.get(
-  '/all_incubators',
-  (req, res) => {
-    allIncs()
-      .then(async (response) => {
-        res.json(response);
-      });
-  }
-);
-/* Temporary route for testing purposes */
-
 
 
 export default router;
