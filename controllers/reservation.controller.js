@@ -3,7 +3,8 @@ import { checkSchema } from 'express-validator';
 import {
   reservationCreate,
   reservationUpdate,
-  userId
+  reservationId,
+  parentId
 } from '../validation/reservation.validation.js';
 import {
   validate
@@ -20,15 +21,48 @@ import {
 } from '../services/reservation.service.js';
 
 
-const router = express.Route();
+const router = express.Router();
 
 router.use(authorizeParent);
 
 router.get(
   '/',
-  checkSchema(userId),
+  checkSchema(parentId),
   validate,
   getReservations
+);
+
+router.get(
+  '/:reservationId',
+  checkSchema(reservationId),
+  checkSchema(parentId),
+  validate,
+  getReservation
+);
+
+router.post(
+  '/',
+  checkSchema(parentId),
+  checkSchema(reservationCreate),
+  validate,
+  createReservation
+);
+
+router.patch(
+  '/:reservationId',
+  checkSchema(reservationId),
+  checkSchema(parentId),
+  checkSchema(reservationUpdate),
+  validate,
+  updateReservation
+);
+
+router.delete(
+  '/:reservationId',
+  checkSchema(reservationId),
+  checkSchema(parentId),
+  validate,
+  deleteReservation
 );
 
 
