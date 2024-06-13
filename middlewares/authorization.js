@@ -17,6 +17,7 @@ export function authorizeParent(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const requiredRole = 'parent';
     if (decoded.role === requiredRole) {
+      req.body.parentId = decoded.id;
       next();
     } else {
       throw new Error();
