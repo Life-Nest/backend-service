@@ -8,7 +8,7 @@ const reservationCreate = {
       errorMessage: 'Reservation status is not valid',
     },
   },
-  baby_name: {
+  babyName: {
     notEmpty: {
       errorMessage: 'Name should be not empty',
     },
@@ -17,13 +17,13 @@ const reservationCreate = {
     },
     escape: true,
   },
-  baby_age: {
+  babyAge: {
     isInt: {
       errorMessage: 'Age should be an integer value',
     },
     toInt: true,
   },
-  baby_gender: {
+  babyGender: {
     notEmpty: {
       errorMessage: 'Gender should be not empty',
     },
@@ -32,13 +32,13 @@ const reservationCreate = {
       errorMessage: 'Gender not valid',
     },
   },
-  baby_weight: {
+  babyWeight: {
     isFloat: {
       errorMessage: 'Weight should be a floating point number',
     },
     toFloat: true,
   },
-  birth_hospital: {
+  birthHospital: {
     notEmpty: {
       errorMessage: 'Hospital name should be not empty',
     },
@@ -47,7 +47,7 @@ const reservationCreate = {
     },
     escape: true,
   },
-  birth_doctor_name: {
+  birthDoctorName: {
     notEmpty: {
       errorMessage: 'Doctor name should be not empty',
     },
@@ -56,7 +56,7 @@ const reservationCreate = {
     },
     escape: true,
   },
-  birth_doctor_phone: {
+  birthDoctorPhone: {
     notEmpty: {
       errorMessage: 'Doctor phone should be not empty',
     },
@@ -67,7 +67,13 @@ const reservationCreate = {
       errorMessage: 'Invalid phone number',
     },
   },
-  incubator_id: {
+  incubatorId: {
+    isInt: {
+      errorMessage: 'Id should be an integer number',
+    },
+    toInt: true,
+  },
+  hospitalId: {
     isInt: {
       errorMessage: 'Id should be an integer number',
     },
@@ -80,8 +86,17 @@ Object.keys(reservationUpdate).forEach(key => {
   reservationUpdate[key].optional = true;
 });
 
-const userId = {
-  userId: {
+const reservationId = {
+  reservationId: {
+    isInt: {
+      errorMessage: 'Id should be an integer number',
+    },
+    toInt: true,
+  },
+}
+
+const parentId = {
+  parentId: {
     isInt: {
       errorMessage: 'Id should be an integer number',
     },
@@ -93,5 +108,6 @@ const userId = {
 export {
   reservationCreate,
   reservationUpdate,
-  userId
+  reservationId,
+  parentId
 }
