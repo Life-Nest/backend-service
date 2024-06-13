@@ -62,6 +62,8 @@ model Reservation {
     parent_id          Int
     incubator          Incubator @relation(fields: [incubator_id], references: [id])
     incubator_id       Int
+    hospital           Hospital  @relation(fields: [hospital_id], references: [id])
+    hospital_id        Int
 }
 
 model Hospital {
@@ -80,6 +82,7 @@ model Hospital {
     updated_at    DateTime        @updatedAt
     incubators    Incubator[]
     hospitalStaff HospitalStaff[]
+    reservations  Reservation[]
 }
 
 model Incubator {
