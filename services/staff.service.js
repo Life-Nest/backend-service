@@ -37,7 +37,7 @@ export const GetStaffById = async (req, res) => {
 
 export const DeleteStaffById = async (req, res) => {
   try {
-    deletedStaff = await prisma.hospitalStaff.delete({
+    const deletedStaff = await prisma.hospitalStaff.delete({
       where: {
         id: +req.params.id,
       },
@@ -45,6 +45,7 @@ export const DeleteStaffById = async (req, res) => {
     if (!deletedStaff) {
       return res.status(400).json({ massage: "ther is no staff with this id" });
     }
+    res.json(deletedStaff);
   } catch (err) {
     res.status(500).json({ massage: err.message });
   }
