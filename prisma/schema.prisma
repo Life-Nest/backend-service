@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("DATABASE_URL")
+    url      = "postgres://test_db_zr1l_user:Zgb2ajPSkaGTOU4VpAexKXL8Qklmk0rq@dpg-cp934bcf7o1s739r8r80-a.oregon-postgres.render.com/test_db_zr1l"
 }
 
 model User {
@@ -103,7 +103,7 @@ model HospitalStaff {
     id            Int      @id @default(autoincrement())
     name          String   @db.VarChar(50)
     email         String   @db.VarChar(50)
-    password_hash String   @db.VarChar(50)
+    password_hash String   @db.VarChar(100)
     role          String   @db.VarChar(50)
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt

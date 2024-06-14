@@ -1,5 +1,6 @@
 // userRoutes.js
 import express from 'express';
+const router = express.Router();
 import {
   userLogin,
   userRegisteration
@@ -10,7 +11,6 @@ import {
 } from '../validation/user.auth.validation.js';
 
 
-const router = express.Router();
 
 router.post(
   '/signup',

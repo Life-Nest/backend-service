@@ -51,7 +51,7 @@ export async function login(req) {
   }
 
   const { email, password } = req.body;
-  // Find the hospital by email
+
   const hospital = await prisma.hospital.findUnique({
     where: {
       email
@@ -61,7 +61,7 @@ export async function login(req) {
     throw { error: 'Hospital not found', code: 404 };
   }
 
-  // Compare passwords
+
   const passwordMatch = await bcrypt.compare(
     password,
     hospital.password_hash
@@ -70,14 +70,13 @@ export async function login(req) {
     throw { error: 'Invalid credentials', code: 401 };
   }
 
-  // Generate JWT token
+
   const token = jwt.sign(
     { hospitalId: hospital.id },
     process.env.JWT_SECRETE,
     { expiresIn: '7d' }
   );
 
-  // Send token in response
   return { token };
 
 
