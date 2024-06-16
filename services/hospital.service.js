@@ -1,68 +1,217 @@
 import { PrismaClient } from '@prisma/client';
-import { validationResult } from 'express-validator';
+import { matchedData } from 'express-validator';
+import {
+  notFoundHandler,
+  internalErrorHandler,
+  conflictErrorHandler
+} from '../middlewares/errorHandlers.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 
-let prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
-export async function updateHospital(req) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    throw { error: errors.array()[0].msg, code: 400 };
-  }
-
-  const hospitalId = parseInt(req.params.id);
-
-  const existingHospital = await prisma.hospital.findUnique({
-    where: {
-      id: hospitalId
-    }
-  });
-  if (!existingHospital) {
-    throw { error: 'Hospital not found', code: 404 };
-  }
-
-  const newData = req.body;
-  let hashedPassword = await bcrypt.hash(newData.password, 10);
-  delete newData.password;
-  newData.password_hash = hashedPassword;
-  const updatedHospital = await prisma.hospital.update({
-    where: {
-      id: hospitalId,
+async function getHospitals(req, res) {
+  const hospitals = await prisma.hospital.findMany({
+    include: {
+      incubators: true,
     },
-    data: newData
   });
 
-  return updatedHospital;
+  res.status(200).json({ hospitals });
 }
 
-export async function deleteHospital(id) {
-  const hospitalExists = await prisma.hospital.findUnique({
-    where: {
-      id: parseInt(id)
-    }
-  });
-  if (!hospitalExists) {
-    throw { code: 404, error: "Hospital not found" };
-  }
+async function getHospital(req, res) {
+  const { hospitalId } = matchedData(req);
 
-  const deletedHospital = await prisma.hospital.delete({
-    where: {
-      id: parseInt(id),
-    },
-  }) 
-  return deletedHospital ;
-}
-
-export async function getHospital(id) {
   const hospital = await prisma.hospital.findUnique({
-    where: {
-      id: parseInt(id)
-    }
+    where: { id: hospitalId },
+    select: {
+      name: true,
+      email: true,
+      type: true,
+      phone_number: true,
+      city: true,
+      address: true,
+      longitude: true,
+      latitude: true,
+      accuracy: true,
+    },
   });
+
   if (!hospital) {
-    throw { code: 404, error: 'Hospital not found' };
+    return notFoundHandler(res);
   }
 
-  return hospital;
+  return res.status(200).json({ ...hospital });
+}
+
+async function createHospital(req, res) {
+  const {
+    name,
+    email,
+    password,
+    type,
+    phoneNumber,
+    city,
+    address,
+    longitude,
+    latitude,
+    accuracy
+  } = matchedData(req);
+
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+    const hospital = await prisma.hospital.create({
+      data: {
+        name: name,
+        email: email,
+        password_hash: passwordHash,
+        type: type,
+        phone_number: phoneNumber,
+        city: city,
+        address: address,
+        longitude: longitude,
+        latitude: latitude,
+        accuracy: accuracy,
+      },
+    });
+
+    const authorizationToken = jwt.sign(
+      { id: hospital.id, role: 'hospital' },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.status(200).json({ authorizationToken });
+  } catch (err) {
+    if (err.code === 'P2002') {
+      return conflictErrorHandler(res, err.meta.target[0]);
+    } else {
+      console.error(err);
+      return internalErrorHandler(res);
+    }
+  }
+}
+
+async function authenticateHospital(req, res) {
+  const { email, password } = matchedData(req);
+
+  try {
+    const hospital = await prisma.hospital.findUnique({
+      where: { email },
+    });
+    if (!hospital) {
+      return res.status(404).json({
+        error: {
+          message: 'Couldn\'t find your account',
+field: 'email',
+          code: 404
+        }
+      });
+    }
+
+    const isCorrectPassword = await bcrypt.compare(
+      password,
+      hospital.password_hash
+    );
+    if (!isCorrectPassword) {
+      return res.status(401).json({
+        error: {
+          message: 'Wrong password',
+          field: 'password',
+          code: 401
+        }
+      });
+    }
+
+    const authorizationToken = jwt.sign(
+      { id: hospital.id, role: 'hospital' },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.status(200).json({ authorizationToken });
+  } catch (err) {
+    console.error(err);
+    return internalErrorHandler(res);
+  }
+}
+
+async function updateHospital(req, res) {
+  const {
+    hospitalId,
+    name,
+    email,
+    password,
+    type,
+    phoneNumber,
+    city,
+    address,
+    longitude,
+    latitude,
+    accuracy
+  } = matchedData(req);
+
+  try {
+    let passwordHash;
+    if (password) {
+      passwordHash = await bcrypt.hash(newData.password, 10);
+    }
+
+    const updatedHospital = await prisma.hospital.update({
+      where: { id: hospitalId },
+      data: {
+        name: name,
+        email: email,
+        password_hash: passwordHash,
+        type: type,
+        phone_number: phoneNumber,
+        city: city,
+        address: address,
+        longitude: longitude,
+        latitude: latitude,
+        accuracy: accuracy,
+      },
+    });
+
+    return res.status(200).json({ ...updatedHospital });
+  } catch (err) {
+    if (err.code === 'P2002') {
+      return conflictErrorHandler(res, err.meta.target[0]);
+    } else if (err.code === 'P2025') {
+      return notFoundHandler(res);
+    } else {
+      console.error(err);
+      return internalErrorHandler(res);
+    }
+  }
+}
+
+async function deleteHospital(req, res) {
+  const { hospitalId } = matchedData(req);
+
+  try {
+    const deletedHospital = await prisma.hospital.delete({
+      where: { id: hospitalId },
+    });
+
+    return res.status(200).json({ ...deletedHospital });
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return notFoundHandler(res);
+    } else {
+      console.error(err);
+      return internalErrorHandler(res);
+    }
+  }
+}
+
+export {
+  getHospitals,
+  getHospital,
+  createHospital,
+  authenticateHospital,
+  updateHospital,
+  deleteHospital,
 }

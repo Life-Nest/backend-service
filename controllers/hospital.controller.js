@@ -1,82 +1,71 @@
 import express from 'express';
+import { checkSchema } from 'express-validator';
 import {
-  validateHospitalUpdate
+  hospitalId,
+  hospitalSignup,
+  hospitalLogin,
+  hospitalProfileUpdate
 } from '../validation/hospital.validation.js';
+import { validate } from '../middlewares/validation.js';
+import { authorizeHospital } from '../middlewares/authorization.js';
 import {
+  getHospitals,
+  getHospital,
+  createHospital,
+  authenticateHospital,
   updateHospital,
-  deleteHospital,
-  getHospital
+  deleteHospital
 } from '../services/hospital.service.js';
 
 
 const router = express.Router();
 
+/* Temporary route for testing purposes */
 router.get(
-  '/:id',
-  (req, res) => {
-    getHospital(req.params.id)
-      .then((hospital) => {
-        res.status(200).json(hospital);
-      })
-      .catch(err => {
-        const { code, error } = err;
-        if (error) {
-          return res.status(code).send({ error });
-        }
-        res.status(500).send({
-          msg: "Server Error Hospital getting failed",
-          error: err.message
-        });
-      })
-  }
+  '/all',
+  getHospitals
+);
+/* Temporary route for testing purposes */
+
+router.get(
+  '/',
+  authorizeHospital,
+  checkSchema(hospitalId),
+  validate,
+  getHospital
+);
+
+router.post(
+  '/signup',
+  checkSchema(hospitalSignup),
+  validate,
+  createHospital
+);
+
+router.post(
+  '/login',
+  checkSchema(hospitalLogin),
+  validate,
+  authenticateHospital
 );
 
 router.patch(
-  '/:id',
-  validateHospitalUpdate,
-  (req, res) => {
-    updateHospital(req)
-      .then(updatedHospital => {
-        res.status(200).json({updatedHospital});
-      })
-      .catch(err => {
-        if (err.code === 'P2002' && err.meta.target.includes('email')) {
-          return res.status(409).json({
-            msg:'',
-            error: 'Email is already in use'
-          });
-        }
-        const { code, error } = err;
-        if (error) {
-          return res.status(code).json({ error });
-        }
-        res.status(500).json({
-          msg: "server Error Geting user failed",
-          error: err.message
-        });
-      });
-  }
+  '/',
+  authorizeHospital,
+  checkSchema(hospitalId),
+  checkSchema(hospitalProfileUpdate),
+  validate,
+  updateHospital
 );
 
 
 router.delete(
-  '/:id',
-  (req, res) => {
-    deleteHospital(req.params.id)
-      .then((deletedHospital) => {
-        res.status(200).json({deletedHospital});
-      })
-      .catch(err => {
-        const { code, error } = err;
-        if (error) {
-          return res.status(code).send({ error });
-        }
-        res.status(500).json({
-          msg: "Server Error Deleting hospital failed",
-          error: err.message
-        });
-      })
-  }
+  '/',
+  authorizeHospital,
+  checkSchema(hospitalId),
+  validate,
+  deleteHospital
 );
+
 
 export default router;

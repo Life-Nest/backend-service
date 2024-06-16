@@ -1,101 +1,145 @@
-import { body } from 'express-validator';
+export const hospitalId = {
+  hospitalId: {
+    isInt: {
+      errorMessage: 'Not a valid number',
+    },
+    toInt: true,
+  },
+}
 
+export const hospitalSignup = {
+  name: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isString: {
+      errorMessage: 'Not a valid string',
+    },
+  },
+  email: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isEmail: {
+      errorMessage: 'Not a valid email format',
+    },
+  },
+  password: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isString: {
+      errorMessage: 'Not a valid string',
+    },
+    isLength: {
+      options: { min: 8, max: 50 },
+      errorMessage: 'Characters should be between 8 and 50 characters',
+    },
+  },
+  type: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isString: {
+      errorMessage: 'Not a valid string',
+    },
+    isLength: {
+      options: { max: 50 },
+      errorMessage: 'Should not exceed 50 characters',
+    },
+  },
+  phoneNumber: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isString: {
+      errorMessage: 'Not a valid string',
+    },
+    isMobilePhone: {
+      errorMessage: 'Not a valid phone number',
+    },
+    isLength: {
+      options: { min: 11, max: 11 },
+      errorMessage: 'Should be 11 characters',
+    },
+  },
+  city: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isString: {
+      errorMessage: 'Not a valid string',
+    },
+    isLength: {
+      options: { max: 50 },
+      errorMessage: 'Should not exceed 50 characters',
+    },
+  },
+  address: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isString: {
+      errorMessage: 'Not a valid string',
+    },
+    isLength: {
+      options: { max: 50 },
+      errorMessage: 'Should not exceed 50 characters',
+    },
+  },
+  longitude: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isFloat: {
+      errorMessage: 'Not a valid floating point number',
+    },
+    toFloat: true,
+  },
+  latitude: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isFloat: {
+      errorMessage: 'Not a valid floating point number',
+    },
+    toFloat: true,
+  },
+  accuracy: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isFloat: {
+      errorMessage: 'Not a valid floating point number',
+    },
+    toFloat: true,
+  },
+};
 
-// Validation middleware for hospital registration
-export const validateHospitalRegistration = [
-  body('email')
-    .isEmail()
-    .withMessage('Email must be a valid email address'),
-  body('password')
-    .isLength({ min: 8, max: 50 })
-    .withMessage('Password must be between 8 and 50 characters'),
-  body('name')
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Name must be a string with length between 1 and 50 characters'),
-  body('type')
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Type must be a string with length between 1 and 50 characters'),
-  body('phone_number')
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Phone number must be a string with length between 1 and 50 characters'),
-  body('city')
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('City must be a string with length between 1 and 50 characters'),
-  body('address')
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Address must be a string with length between 1 and 50 characters'),
-  body('longitude')
-    .isFloat()
-    .withMessage('Longitude must be a floating-point number'),
-  body('latitude')
-    .isFloat()
-    .withMessage('Latitude must be a floating-point number'),
-  body('accuracy')
-    .isFloat()
-    .withMessage('Accuracy must be a floating-point number')
-];
+export const hospitalLogin = {
+  email: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isEmail: {
+      errorMessage: 'Not a valid email format',
+    },
+  },
+  password: {
+    notEmpty: {
+      errorMessage: 'Should be not empty',
+    },
+    isString: {
+      errorMessage: 'Not a valid string',
+    },
+    isLength: {
+      options: { min: 8, max: 50 },
+      errorMessage: 'Characters should be between 8 and 50 characters',
+    },
+  },
+};
 
-// Validation middleware for hospital login
-export const validateHospitalLogin = [
-    body('email')
-      .isEmail()
-      .withMessage('Email must be a valid email address'),
-    body('password')
-      .isLength({ min: 6 })
-      .withMessage('Password must be at least 6 characters long')
-];
-
-
-// Validation middleware for hospital updates
-export const validateHospitalUpdate = [
-  body('email')
-    .optional()
-    .isEmail()
-    .withMessage('Email must be a valid email address'),
-  body('password_hash')
-    .optional()
-    .isLength({ min: 8, max: 100 })
-    .withMessage('Password must be between 8 and 100 characters'),
-  body('name')
-    .optional()
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Name must be a string with length between 1 and 50 characters'),
-  body('type')
-    .optional()
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Type must be a string with length between 1 and 50 characters'),
-  body('phone_number')
-    .optional()
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Phone number must be a string with length between 1 and 50 characters'),
-  body('city')
-    .optional()
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('City must be a string with length between 1 and 50 characters'),
-  body('address')
-    .optional()
-    .isString()
-    .isLength({ min: 1, max: 50 })
-    .withMessage('Address must be a string with length between 1 and 50 characters'),
-  body('longitude')
-    .optional()
-    .isFloat()
-    .withMessage('Longitude must be a floating-point number'),
-  body('latitude')
-    .optional()
-    .isFloat()
-    .withMessage('Latitude must be a floating-point number'),
-  body('accuracy')
-    .optional()
-    .isFloat()
-    .withMessage('Accuracy must be a floating-point number')
-];
+export const hospitalProfileUpdate = structuredClone(hospitalSignup);
+Object.keys(hospitalProfileUpdate).forEach(key => {
+  hospitalProfileUpdate[key].optional = true;
+});
