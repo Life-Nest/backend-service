@@ -1,24 +1,70 @@
-// userRoutes.js
 import express from 'express';
+import { checkSchema } from 'express-validator';
+import {
+  userId,
+  userSignup,
+  userLogin,
+  userProfileUpdate
+} from '../validation/user.validation.js';
+import { validate } from '../middlewares/validation.js';
+import { authorizeParent } from '../middlewares/authorization.js';
 import {
   getUsers,
   getUser,
+  createUser,
+  authenticateUser,
   updateUser,
   deleteUser
 } from '../services/user.service.js';
-import {
-  validateUpdateUser
-} from '../validation/updateUser.validation.js';
 
 
 const router = express.Router();
 
-router.get('/', getUsers);
+/* Temporary Route */
+router.get(
+  '/all',
+  getUsers
+);
+/* Temporary Route */
 
-router.get('/:id', getUser);
+router.get(
+  '/',
+  authorizeParent,
+  checkSchema(userId),
+  validate,
+  getUser
+);
 
-router.delete('/:id', deleteUser);
+router.post(
+  '/signup',
+  checkSchema(userSignup),
+  validate,
+  createUser
+);
 
-router.patch('/:id', validateUpdateUser, updateUser);
+router.post(
+  '/login',
+  checkSchema(userLogin),
+  validate,
+  authenticateUser
+);
+
+router.patch(
+  '/',
+  authorizeParent,
+  checkSchema(userId),
+  checkSchema(userProfileUpdate),
+  validate,
+  updateUser
+);
+
+router.delete(
+  '/',
+  authorizeParent,
+  checkSchema(userId),
+  validate,
+  deleteUser
+);
+
 
 export default router;

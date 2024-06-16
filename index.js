@@ -1,6 +1,5 @@
 import express from 'express';
 
-import userAuthRoutes from './controllers/user.auth.controller.js';
 import userRoutes from './controllers/user.controller.js';
 import incubatorRoutes from './controllers/incubator.controller.js';
 import hospitalAuthRoutes from './controllers/hospital.auth.controller.js';
@@ -8,18 +7,17 @@ import hospitalRoutes from './controllers/hospital.controller.js';
 import searchRoute from './controllers/search.controller.js';
 import reservationRoutes from './controllers/reservation.controller.js';
 import staffRoutes from './controllers/staff.controller.js';
-import staffِِAuthRoutes from './controllers/staff.auth.controller.js';
+import staffAuthRoutes from './controllers/staff.auth.controller.js';
 import dotenv from 'dotenv';
 const app = express();
 dotenv.config();
 app.use(express.json());
-app.use('/users/auth', userAuthRoutes);
-app.use('/users', userRoutes);
+app.use('/user', userRoutes);
 app.use('/hospitals/auth', hospitalAuthRoutes);
 app.use('/hospitals', hospitalRoutes);
 app.use('/reservations', reservationRoutes);
 app.use('/staff', staffRoutes); 
-app.use('/staff/auth', staffِِAuthRoutes);
+app.use('/staff/auth', staffAuthRoutes);
 
 app.use(searchRoute);
 app.use(incubatorRoutes);
@@ -29,7 +27,12 @@ app.get('/', (req, res) => {
 });
 
 app.all('*', (req, res) => {
-  res.status(404).json({ msg: "Not Found" });
+  res.status(404).json({
+    error: {
+      message: "Not Found",
+      code: 404
+    }
+  });
 });
 
 app.listen(3000, () => {
