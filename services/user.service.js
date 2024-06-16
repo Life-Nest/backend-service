@@ -73,15 +73,14 @@ async function createUser(req, res) {
       },
     });
 
-    const token = jwt.sign(
+    const authorizationToken = jwt.sign(
       { id: user.id, role: 'parent' },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    return res.status(200).json({ authorizationToken: token });
-  }
-  catch (err) {
+    return res.status(200).json({ authorizationToken });
+  } catch (err) {
     if (err.code === 'P2002') {
       return conflictErrorHandler(res, err.meta.target[0]);
     } else {
@@ -92,9 +91,9 @@ async function createUser(req, res) {
 }
 
 async function authenticateUser(req, res) {
-  try {
-    const { email, password } = matchedData(req);
+  const { email, password } = matchedData(req);
 
+  try {
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -112,7 +111,6 @@ async function authenticateUser(req, res) {
       password,
       user.password_hash
     );
-    console.log(isCorrectPassword);
     if (!isCorrectPassword) {
       return res.status(401).json({
         error: {
@@ -123,13 +121,13 @@ async function authenticateUser(req, res) {
       });
     }
 
-    const token = jwt.sign(
+    const authorizationToken = jwt.sign(
       { id: user.id, role: 'parent' },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    return res.status(200).json({ authorizationToken: token });
+    return res.status(200).json({ authorizationToken });
   } catch (err) {
     console.error(err);
     return internalErrorHandler(res);
