@@ -25,7 +25,7 @@ export function authorizeParent(req, res, next) {
   } catch (error) {
     res.status(403).json({
       error: {
-        message: 'Invalid token',
+        message: 'Forbidden',
         code: 403
       }
     });
@@ -56,7 +56,7 @@ export function authorizeHospital(req, res, next) {
   } catch (error) {
     res.status(403).json({
       error: {
-        message: 'Invalid token',
+        message: 'Forbidden',
         code: 403
       }
     });
@@ -79,7 +79,8 @@ export function authorizeStaff(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const requiredRole = 'staff';
     if (decoded.role === requiredRole) {
-      req.body.parentId = decoded.id;
+      req.body.staffMemberId = decoded.id;
+      req.body.hospitalId = decoded.hospitalId;
       next();
     } else {
       throw new Error();
@@ -87,7 +88,7 @@ export function authorizeStaff(req, res, next) {
   } catch (error) {
     res.status(403).json({
       error: {
-        message: 'Invalid token',
+        message: 'Forbidden',
         code: 403
       }
     });
