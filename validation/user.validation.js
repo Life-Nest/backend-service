@@ -1,5 +1,5 @@
-export const hospitalId = {
-  hospitalId: {
+export const userId = {
+  userId: {
     isInt: {
       errorMessage: 'Not a valid number',
     },
@@ -7,7 +7,7 @@ export const hospitalId = {
   },
 }
 
-export const hospitalSignup = {
+export const userSignup = {
   name: {
     notEmpty: {
       errorMessage: 'Should be not empty',
@@ -36,16 +36,19 @@ export const hospitalSignup = {
       errorMessage: 'Characters should be between 8 and 50 characters',
     },
   },
-  type: {
+  nationalId: {
     notEmpty: {
       errorMessage: 'Should be not empty',
     },
     isString: {
       errorMessage: 'Not a valid string',
     },
+    isNumeric: {
+      errorMessage: 'Should contains only numbers',
+    },
     isLength: {
-      options: { max: 50 },
-      errorMessage: 'Should not exceed 50 characters',
+      options: { min: 14, max: 14 },
+      errorMessage: 'Should be 14 characters',
     },
   },
   phoneNumber: {
@@ -116,7 +119,7 @@ export const hospitalSignup = {
   },
 };
 
-export const hospitalLogin = {
+export const userLogin = {
   email: {
     notEmpty: {
       errorMessage: 'Should be not empty',
@@ -139,7 +142,7 @@ export const hospitalLogin = {
   },
 };
 
-export const hospitalProfileUpdate = structuredClone(hospitalSignup);
-Object.keys(hospitalProfileUpdate).forEach(key => {
-  hospitalProfileUpdate[key].optional = true;
+export const userProfileUpdate = structuredClone(userSignup);
+Object.keys(userProfileUpdate).forEach(key => {
+  userProfileUpdate[key].optional = true;
 });

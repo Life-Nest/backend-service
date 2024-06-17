@@ -86,20 +86,7 @@ async function searchHospital(req, res) {
   res.status(200).json({ hospitals: trimmedResult });
 }
 
-/* Temporary function for testing purposes */
-async function allHospitals(req, res) {
-  const hospitals = await prisma.hospital.findMany({
-    include: {
-      incubators: true,
-    },
-  });
-
-  res.status(200).json({ hospitals });
-}
-/* Temporary function for testing purposes */
-
 
 export {
   searchHospital,
-  allHospitals
 }
