@@ -96,9 +96,8 @@ model Incubator {
 model HospitalStaff {
     id            Int      @id @default(autoincrement())
     name          String   @db.VarChar(50)
-    email         String   @db.VarChar(50)
+    email         String   @unique @db.VarChar(50)
     password_hash String   @db.VarChar(100)
-    role          String   @db.VarChar(50)
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
     hospital      Hospital @relation(fields: [hospital_id], references: [id])
