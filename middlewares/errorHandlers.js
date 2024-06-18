@@ -1,6 +1,6 @@
 export function notFoundHandler(res) {
   return res.status(404).json({
-    error: {
+  error: {
       message: 'Not Found',
       code: 404
     }
@@ -22,6 +22,24 @@ export function conflictErrorHandler(res, field) {
       message: 'Conflict. Already taken.',
       field: field,
       code: 409
+    }
+  });
+}
+
+export function unauthorizedHandler(res) {
+  return res.status(401).json({
+    error: {
+      message: 'Unauthorized',
+      code: 401
+    }
+  });
+}
+
+export function forbiddenHandler(res) {
+  return res.status(403).json({
+    error: {
+      message: 'Forbidden',
+      code: 403
     }
   });
 }
