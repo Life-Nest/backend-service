@@ -1,18 +1,29 @@
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
+import {
+  notFoundHandler,
+  internalErrorHandler,
+  conflictErrorHandler
+} from '../middlewares/errorHandlers.js';
 
 
 const prisma = new PrismaClient();
 
 async function getReservations(req, res) {
+  const reservations = await prisma.reservation.findMany();
+
+  return res.status(200).json({ reservations });
+}
+
+async function getUserReservations(req, res) {
   const { parentId } = matchedData(req);
-  const reservations = await prisma.reservation.findMany({
+  const userReservations = await prisma.reservation.findMany({
     where: {
       parent_id: parentId,
     },
   });
 
-  return res.status(200).json({ reservations });
+  return res.status(200).json({ userReservations });
 }
 
 async function getReservation(req, res) {
@@ -26,12 +37,7 @@ async function getReservation(req, res) {
   });
 
   if (reservation === null) {
-    return res.status(404).json({
-      error: {
-        message: 'Not Found',
-        code: 404
-      }
-    });
+    return notFoundHandler(res);
   }
 
   return res.status(200).json({ ...reservation });
@@ -69,15 +75,10 @@ async function createReservation(req, res) {
       },
     });
     
-    return res.status(201).json({ ...reservation });
+    return res.status(200).json({ ...reservation });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      error: {
-        message: 'Internal Server Error',
-        code: 500
-      }
-    });
+    return internalErrorHandler(res);
   }
 }
 
@@ -121,20 +122,10 @@ async function updateReservation(req, res) {
     return res.status(200).json({ ...reservation });
   } catch (err) {
     if (err.code === 'P2025') {
-      return res.status(404).json({
-        error: {
-          message: 'Not Found',
-          code: 404
-        }
-      });
+      return notFoundHandler(res);
     } else {
       console.error(err);
-      return res.status(500).json({
-        error: {
-          message: 'Internal Server Error',
-          code: 500
-        }
-      });
+      return internalErrorHandler(res);
     }
   }
 }
@@ -153,26 +144,17 @@ async function deleteReservation(req, res) {
     return res.status(200).json({ ...reservation });
   } catch (err) {
     if (err.code === 'P2025') {
-      return res.status(404).json({
-        error: {
-          message: 'Not Found',
-          code: 404
-        }
-      });
+      return notFoundHandler(res);
     } else {
       console.error(err);
-      return res.status(500).json({
-        error: {
-          message: 'Internal Server Error',
-          code: 500
-        }
-      });
+      return internalErrorHandler(res);
     }
   }
 }
 
 export {
   getReservations,
+  getUserReservations,
   getReservation,
   createReservation,
   updateReservation,

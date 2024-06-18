@@ -14,6 +14,7 @@ import {
 } from '../middlewares/authorization.js';
 import {
   getReservations,
+  getUserReservations,
   getReservation,
   createReservation,
   updateReservation,
@@ -23,17 +24,22 @@ import {
 
 const router = express.Router();
 
-router.use(authorizeParent);
-
 router.get(
-  '/',
-  checkSchema(parentId),
-  validate,
+  '/all',
   getReservations
 );
 
 router.get(
+  '/',
+  authorizeParent,
+  checkSchema(parentId),
+  validate,
+  getUserReservations
+);
+
+router.get(
   '/:reservationId',
+  authorizeParent,
   checkSchema(reservationId),
   checkSchema(parentId),
   validate,
@@ -42,6 +48,7 @@ router.get(
 
 router.post(
   '/',
+  authorizeParent,
   checkSchema(parentId),
   checkSchema(reservationCreate),
   validate,
@@ -50,6 +57,7 @@ router.post(
 
 router.patch(
   '/:reservationId',
+  authorizeParent,
   checkSchema(reservationId),
   checkSchema(parentId),
   checkSchema(reservationUpdate),
@@ -59,6 +67,7 @@ router.patch(
 
 router.delete(
   '/:reservationId',
+  authorizeParent,
   checkSchema(reservationId),
   checkSchema(parentId),
   validate,

@@ -12,7 +12,7 @@ const reservationCreate = {
     notEmpty: {
       errorMessage: 'Name should be not empty',
     },
-  isString: {
+    isString: {
       errorMessage: 'Name should be a string',
     },
     escape: true,
