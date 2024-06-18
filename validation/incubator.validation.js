@@ -32,7 +32,7 @@ export const incubatorCreate = {
     },
     isIn: {
       options: [['available', 'pending', 'reserved']],
-      errorMessage: 'Not available option.\
+      errorMessage: 'Not available status option. \
 Choose between: available, pending, reserved.',
     },
   },

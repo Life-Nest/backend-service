@@ -9,6 +9,12 @@ import {
 
 const prisma = new PrismaClient();
 
+async function getIncubators(req, res) {
+  const incubators = await prisma.incubator.findMany();
+
+  return res.status(200).json({ incubators });
+}
+
 async function getHospitalIncubators(req, res) {
   const { hospitalId } = matchedData(req);
 
@@ -159,6 +165,7 @@ async function checkIncubatorName(req, res, next) {
 
 
 export {
+  getIncubators,
   getHospitalIncubators,
   getIncubator,
   createIncubator,

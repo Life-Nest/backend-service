@@ -11,6 +11,7 @@ import {
   authorizeHospitalOrStaff
 } from '../middlewares/authorization.js';
 import {
+  getIncubators,
   getHospitalIncubators,
   getIncubator,
   createIncubator,
@@ -21,6 +22,13 @@ import {
 
 
 const router = express.Router();
+
+/* Temporary Route */
+router.get(
+  '/all',
+  getIncubators
+);
+/* Temporary Route */
 
 router.get(
   '/',
