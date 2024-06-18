@@ -14,7 +14,9 @@ const prisma = new PrismaClient();
 async function getHospitals(req, res) {
   const hospitals = await prisma.hospital.findMany({
     include: {
+      hospitalStaff: true,
       incubators: true,
+      reservations: true,
     },
   });
 
