@@ -16,10 +16,10 @@ app.use(express.json());
 app.use('/user', userRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/staff', staffRoutes); 
+app.use('/incubators', incubatorRoutes);
 app.use('/reservations', reservationRoutes);
 
 app.use('/hospitals', searchRoute);
-app.use(incubatorRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).json({ msg: "Incubator API root endpoint" });
