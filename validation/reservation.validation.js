@@ -5,7 +5,8 @@ const reservationCreate = {
     },
     isIn: {
       options: [['confirmed', 'pending', 'cancelled']],
-      errorMessage: 'Reservation status is not valid',
+      errorMessage: 'Not available status option. \
+Choose between: confirmed, pending, cancelled',
     },
   },
   babyName: {
@@ -19,7 +20,7 @@ const reservationCreate = {
   },
   babyAge: {
     isInt: {
-      errorMessage: 'Age should be an integer value',
+      errorMessage: 'Age should be a number',
     },
     toInt: true,
   },
@@ -29,7 +30,7 @@ const reservationCreate = {
     },
     isIn: {
       options: [['male', 'female']],
-      errorMessage: 'Gender not valid',
+      errorMessage: 'Gender not valid. Choose between: male, female',
     },
   },
   babyWeight: {
@@ -68,14 +69,15 @@ const reservationCreate = {
     },
   },
   incubatorId: {
+    optional: true,
     isInt: {
-      errorMessage: 'Id should be an integer number',
+      errorMessage: 'Id should be a number',
     },
     toInt: true,
   },
   hospitalId: {
     isInt: {
-      errorMessage: 'Id should be an integer number',
+      errorMessage: 'Id should be a number',
     },
     toInt: true,
   },
@@ -95,8 +97,8 @@ const reservationId = {
   },
 }
 
-const parentId = {
-  parentId: {
+const userId = {
+  userId: {
     isInt: {
       errorMessage: 'Id should be an integer number',
     },
@@ -109,5 +111,5 @@ export {
   reservationCreate,
   reservationUpdate,
   reservationId,
-  parentId
+  userId
 }

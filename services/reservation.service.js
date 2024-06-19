@@ -21,6 +21,27 @@ async function getUserReservations(req, res) {
     where: {
       parent_id: parentId,
     },
+    select: {
+      id: true,
+      status: true,
+      baby_name: true,
+      baby_age: true,
+      baby_gender: true,
+      baby_weight: true,
+      birth_hospital: true,
+      birth_doctor_name: true,
+      birth_doctor_phone: true,
+      created_at: true,
+      updated_at: true,
+      hospital: {
+        select: {
+          name: true,
+          phone_number: true,
+          city: true,
+          address: true,
+        },
+      },
+    },
   });
 
   return res.status(200).json({ userReservations });
@@ -33,6 +54,27 @@ async function getReservation(req, res) {
     where: {
       id: reservationId,
       parent_id: parentId,
+    },
+    select: {
+      id: true,
+      status: true,
+      baby_name: true,
+      baby_age: true,
+      baby_gender: true,
+      baby_weight: true,
+      birth_hospital: true,
+      birth_doctor_name: true,
+      birth_doctor_phone: true,
+      created_at: true,
+      updated_at: true,
+      hospital: {
+        select: {
+          name: true,
+          phone_number: true,
+          city: true,
+          address: true,
+        },
+      },
     },
   });
 
@@ -53,7 +95,7 @@ async function createReservation(req, res) {
     birthHospital,
     birthDoctorName,
     birthDoctorPhone,
-    parentId,
+    userId,
     incubatorId,
     hospitalId
   } = matchedData(req);
@@ -69,7 +111,7 @@ async function createReservation(req, res) {
         birth_hospital: birthHospital,
         birth_doctor_name: birthDoctorName,
         birth_doctor_phone: birthDoctorPhone,
-        parent_id: parentId,
+        user_id: userId,
         incubator_id: incubatorId,
         hospital_id: hospitalId,
       },
@@ -116,6 +158,19 @@ async function updateReservation(req, res) {
         parent_id: parentId,
         incubator_id: incubatorId,
         hospital_id: hospitalId,
+      },
+      select: {
+        id: true,
+        status: true,
+        baby_name: true,
+        baby_age: true,
+        baby_gender: true,
+        baby_weight: true,
+        birth_hospital: true,
+        birth_doctor_name: true,
+        birth_doctor_phone: true,
+        created_at: true,
+        updated_at: true,
       },
     });
     

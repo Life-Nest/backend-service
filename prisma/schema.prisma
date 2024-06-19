@@ -52,10 +52,10 @@ model Reservation {
     birth_doctor_phone String    @db.VarChar(50)
     created_at         DateTime  @default(now())
     updated_at         DateTime  @updatedAt
-    parent             User      @relation(fields: [parent_id], references: [id])
-    parent_id          Int
-    incubator          Incubator @relation(fields: [incubator_id], references: [id])
-    incubator_id       Int
+    user               User      @relation(fields: [user_id], references: [id])
+    user_id            Int
+    incubator          Incubator? @relation(fields: [incubator_id], references: [id])
+    incubator_id       Int?
     hospital           Hospital  @relation(fields: [hospital_id], references: [id])
     hospital_id        Int
 }

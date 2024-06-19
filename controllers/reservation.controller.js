@@ -4,7 +4,7 @@ import {
   reservationCreate,
   reservationUpdate,
   reservationId,
-  parentId
+  userId
 } from '../validation/reservation.validation.js';
 import {
   validate
@@ -32,7 +32,7 @@ router.get(
 router.get(
   '/',
   authorizeParent,
-  checkSchema(parentId),
+  checkSchema(userId),
   validate,
   getUserReservations
 );
@@ -40,8 +40,8 @@ router.get(
 router.get(
   '/:reservationId',
   authorizeParent,
+  checkSchema(userId),
   checkSchema(reservationId),
-  checkSchema(parentId),
   validate,
   getReservation
 );
@@ -49,7 +49,7 @@ router.get(
 router.post(
   '/',
   authorizeParent,
-  checkSchema(parentId),
+  checkSchema(userId),
   checkSchema(reservationCreate),
   validate,
   createReservation
@@ -58,8 +58,8 @@ router.post(
 router.patch(
   '/:reservationId',
   authorizeParent,
+  checkSchema(userId),
   checkSchema(reservationId),
-  checkSchema(parentId),
   checkSchema(reservationUpdate),
   validate,
   updateReservation
@@ -68,8 +68,8 @@ router.patch(
 router.delete(
   '/:reservationId',
   authorizeParent,
+  checkSchema(userId),
   checkSchema(reservationId),
-  checkSchema(parentId),
   validate,
   deleteReservation
 );
