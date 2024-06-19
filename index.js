@@ -1,4 +1,8 @@
+import { fileURLToPath } from 'url';
 import express from 'express';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 
 import userRoutes from './controllers/user.controller.js';
 import incubatorRoutes from './controllers/incubator.controller.js';
@@ -6,19 +10,22 @@ import hospitalRoutes from './controllers/hospital.controller.js';
 import searchRoute from './controllers/search.controller.js';
 import reservationRoutes from './controllers/reservation.controller.js';
 import staffRoutes from './controllers/staff.controller.js';
-import dotenv from 'dotenv';
 
 
 dotenv.config();
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use('/user', userRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/staff', staffRoutes); 
 app.use('/incubators', incubatorRoutes);
 app.use('/reservations', reservationRoutes);
-
 app.use('/hospitals', searchRoute);
 
 app.get('/', (req, res) => {
