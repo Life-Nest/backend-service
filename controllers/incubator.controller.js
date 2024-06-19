@@ -1,108 +1,80 @@
 import express from 'express';
+import { checkSchema } from 'express-validator';
+import { hospitalId } from '../validation/hospital.validation.js';
 import {
-  hospitalId,
   incubatorId,
   incubatorCreate,
   incubatorUpdate
 } from '../validation/incubator.validation.js';
+import { validate } from '../middlewares/validation.js';
 import {
-  validationResult,
-  matchedData,
-  checkSchema
-} from 'express-validator';
+  authorizeHospitalOrStaff
+} from '../middlewares/authorization.js';
 import {
-  getAllIncubators,
+  getIncubators,
+  getHospitalIncubators,
   getIncubator,
   createIncubator,
   updateIncubator,
-  deleteIncubator
+  deleteIncubator,
+  checkIncubatorName
 } from '../services/incubator.service.js';
-import { serviceHandler } from './handlers.js';
 
-
-const myValidationResult = validationResult.withDefaults({
-  formatter: error => {
-    return { msg: error.msg };
-  }
-});
 
 const router = express.Router();
-const prefix = '/hospitals/:hospital_id/incubators';
-const path = (path) => prefix + path;
+
+/* Temporary Route */
+router.get(
+  '/all',
+  getIncubators
+);
+/* Temporary Route */
 
 router.get(
-  path('/'),
+  '/',
+  authorizeHospitalOrStaff,
   checkSchema(hospitalId),
-  (req, res) => {
-    const result = myValidationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
-    }
-
-    const data = matchedData(req);
-    serviceHandler(getAllIncubators, data.hospital_id, res);
-  }
+  validate,
+  getHospitalIncubators
 );
 
 router.get(
-  path('/:incubator_id'),
+  '/:incubatorId',
+  authorizeHospitalOrStaff,
   checkSchema(hospitalId),
   checkSchema(incubatorId),
-  (req, res) => {
-    const result = myValidationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
-    }
-
-    const data = matchedData(req);
-    serviceHandler(getIncubator, data, res);
-  }
+  validate,
+  getIncubator
 );
 
 router.post(
-  path('/'),
+  '/',
+  authorizeHospitalOrStaff,
   checkSchema(hospitalId),
   checkSchema(incubatorCreate),
-  (req, res) => {
-    const result = myValidationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
-    }
-
-    const data = matchedData(req);
-    serviceHandler(createIncubator, data, res);
-  }
+  validate,
+  checkIncubatorName,
+  createIncubator
 );
 
 router.patch(
-  path('/:incubator_id'),
+  '/:incubatorId',
+  authorizeHospitalOrStaff,
   checkSchema(hospitalId),
   checkSchema(incubatorId),
   checkSchema(incubatorUpdate),
-  (req, res) => {
-    const result = myValidationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
-    }
-
-    const data = matchedData(req);
-    serviceHandler(updateIncubator, data, res);
-  }
+  validate,
+  checkIncubatorName,
+  updateIncubator
 );
 
 router.delete(
-  path('/:incubator_id'),
+  '/:incubatorId',
+  authorizeHospitalOrStaff,
   checkSchema(hospitalId),
   checkSchema(incubatorId),
-  (req, res) => {
-    const result = myValidationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
-    }
-
-    const data = matchedData(req);
-    serviceHandler(deleteIncubator, data, res);
-  }
+  validate,
+  deleteIncubator
 );
 
 

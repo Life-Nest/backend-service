@@ -1,16 +1,5 @@
-import { param, body } from 'express-validator';
-
-const hospitalId = {
-  hospital_id: {
-    isInt: {
-      errorMessage: 'Hospital ID must be an integer value',
-    },
-    toInt: true,
-  },
-}
-
-const incubatorId = {
-  incubator_id: {
+export const incubatorId = {
+  incubatorId: {
     isInt: {
       errorMessage: 'Incubator ID must be an integer value',
     },
@@ -18,80 +7,44 @@ const incubatorId = {
   },
 }
 
-const incubatorCreate = {
+export const incubatorCreate = {
   name: {
     notEmpty: {
-      errorMessage: 'Incubator name must be not empty',
+      errorMessage: 'Should be not empty',
     },
     isString: {
-      errorMessage: 'Incubator name must be a string',
+      errorMessage: 'Not a valid string',
     },
     escape: true,
   },
   type: {
     notEmpty: {
-      errorMessage: 'Incubator type must be not empty',
+      errorMessage: 'Should be not empty',
     },
     isString: {
-      errorMessage: 'Incubator type must be a string',
+      errorMessage: 'Should be a string',
     },
     escape: true,
   },
   status: {
     notEmpty: {
-      errorMessage: 'Incubator type must be not empty',
+      errorMessage: 'Should be not empty',
     },
     isIn: {
       options: [['available', 'pending', 'reserved']],
-      errorMessage: 'Incubator status not valid',
+      errorMessage: 'Not available status option. \
+Choose between: available, pending, reserved.',
     },
   },
-  rent_per_day: {
+  rentPerDay: {
     isFloat: {
-      errorMessage: 'Incubator rent must be of the type double',
+      errorMessage: 'Not a valid floating point number',
     },
     toFloat: true,
   },
 }
 
-const incubatorUpdate = structuredClone(incubatorCreate);
+export const incubatorUpdate = structuredClone(incubatorCreate);
 Object.keys(incubatorUpdate).forEach(key => {
   incubatorUpdate[key].optional = true;
 });
-
-const incubatorSearch = {
-  longitude: {
-    isFloat: {
-      errorMessage: 'Longitude must be of the type double',
-    },
-    toFloat: true,
-  },
-  latitude: {
-    isFloat: {
-      errorMessage: 'Latitude must be of the type double',
-    },
-    toFloat: true,
-  },
-  city: {
-    optional: true,
-    isString: {
-      errorMessage: 'City must be a string',
-    },
-    escape: true,
-  },
-  page: {
-    isInt: {
-      errorMessage: 'Page number must be an integer',
-    },
-    toInt: true,
-  },
-}
-
-
-export {
-  hospitalId,
-  incubatorId,
-  incubatorCreate,
-  incubatorUpdate,
-  incubatorSearch,
-}

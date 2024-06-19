@@ -1,18 +1,50 @@
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
+import {
+  notFoundHandler,
+  internalErrorHandler,
+  conflictErrorHandler
+} from '../middlewares/errorHandlers.js';
 
 
 const prisma = new PrismaClient();
 
 async function getReservations(req, res) {
+  const reservations = await prisma.reservation.findMany();
+
+  return res.status(200).json({ reservations });
+}
+
+async function getUserReservations(req, res) {
   const { parentId } = matchedData(req);
-  const reservations = await prisma.reservation.findMany({
+  const userReservations = await prisma.reservation.findMany({
     where: {
       parent_id: parentId,
     },
+    select: {
+      id: true,
+      status: true,
+      baby_name: true,
+      baby_age: true,
+      baby_gender: true,
+      baby_weight: true,
+      birth_hospital: true,
+      birth_doctor_name: true,
+      birth_doctor_phone: true,
+      created_at: true,
+      updated_at: true,
+      hospital: {
+        select: {
+          name: true,
+          phone_number: true,
+          city: true,
+          address: true,
+        },
+      },
+    },
   });
 
-  return res.status(200).json({ reservations });
+  return res.status(200).json({ userReservations });
 }
 
 async function getReservation(req, res) {
@@ -23,15 +55,31 @@ async function getReservation(req, res) {
       id: reservationId,
       parent_id: parentId,
     },
+    select: {
+      id: true,
+      status: true,
+      baby_name: true,
+      baby_age: true,
+      baby_gender: true,
+      baby_weight: true,
+      birth_hospital: true,
+      birth_doctor_name: true,
+      birth_doctor_phone: true,
+      created_at: true,
+      updated_at: true,
+      hospital: {
+        select: {
+          name: true,
+          phone_number: true,
+          city: true,
+          address: true,
+        },
+      },
+    },
   });
 
   if (reservation === null) {
-    return res.status(404).json({
-      error: {
-        message: 'Not Found',
-        code: 404
-      }
-    });
+    return notFoundHandler(res);
   }
 
   return res.status(200).json({ ...reservation });
@@ -47,7 +95,7 @@ async function createReservation(req, res) {
     birthHospital,
     birthDoctorName,
     birthDoctorPhone,
-    parentId,
+    userId,
     incubatorId,
     hospitalId
   } = matchedData(req);
@@ -63,21 +111,16 @@ async function createReservation(req, res) {
         birth_hospital: birthHospital,
         birth_doctor_name: birthDoctorName,
         birth_doctor_phone: birthDoctorPhone,
-        parent_id: parentId,
+        user_id: userId,
         incubator_id: incubatorId,
         hospital_id: hospitalId,
       },
     });
     
-    return res.status(201).json({ ...reservation });
+    return res.status(200).json({ ...reservation });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      error: {
-        message: 'Internal Server Error',
-        code: 500
-      }
-    });
+    return internalErrorHandler(res);
   }
 }
 
@@ -116,25 +159,28 @@ async function updateReservation(req, res) {
         incubator_id: incubatorId,
         hospital_id: hospitalId,
       },
+      select: {
+        id: true,
+        status: true,
+        baby_name: true,
+        baby_age: true,
+        baby_gender: true,
+        baby_weight: true,
+        birth_hospital: true,
+        birth_doctor_name: true,
+        birth_doctor_phone: true,
+        created_at: true,
+        updated_at: true,
+      },
     });
     
     return res.status(200).json({ ...reservation });
   } catch (err) {
     if (err.code === 'P2025') {
-      return res.status(404).json({
-        error: {
-          message: 'Not Found',
-          code: 404
-        }
-      });
+      return notFoundHandler(res);
     } else {
       console.error(err);
-      return res.status(500).json({
-        error: {
-          message: 'Internal Server Error',
-          code: 500
-        }
-      });
+      return internalErrorHandler(res);
     }
   }
 }
@@ -153,26 +199,17 @@ async function deleteReservation(req, res) {
     return res.status(200).json({ ...reservation });
   } catch (err) {
     if (err.code === 'P2025') {
-      return res.status(404).json({
-        error: {
-          message: 'Not Found',
-          code: 404
-        }
-      });
+      return notFoundHandler(res);
     } else {
       console.error(err);
-      return res.status(500).json({
-        error: {
-          message: 'Internal Server Error',
-          code: 500
-        }
-      });
+      return internalErrorHandler(res);
     }
   }
 }
 
 export {
   getReservations,
+  getUserReservations,
   getReservation,
   createReservation,
   updateReservation,

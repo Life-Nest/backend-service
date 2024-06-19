@@ -1,11 +1,13 @@
 const searchParams = {
   longitude: {
+    optional: true,
     isFloat: {
       errorMessage: 'Longitude must be of the type double',
     },
     toFloat: true,
   },
   latitude: {
+    optional: true,
     isFloat: {
       errorMessage: 'Latitude must be of the type double',
     },

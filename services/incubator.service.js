@@ -1,13 +1,25 @@
 import { PrismaClient } from '@prisma/client';
+import { matchedData } from 'express-validator';
+import {
+  notFoundHandler,
+  internalErrorHandler,
+  conflictErrorHandler
+} from '../middlewares/errorHandlers.js';
 
 
 const prisma = new PrismaClient();
 
-async function getAllIncubators(hospital_id) { 
-  const allIncubators = await prisma.incubator.findMany({
-    where: {
-      hospital_id: hospital_id,
-    },
+async function getIncubators(req, res) {
+  const incubators = await prisma.incubator.findMany();
+
+  return res.status(200).json({ incubators });
+}
+
+async function getHospitalIncubators(req, res) {
+  const { hospitalId } = matchedData(req);
+
+  const hospitalIncubators = await prisma.incubator.findMany({
+    where: { hospital_id: hospitalId },
     select: {
       id: true,
       name: true,
@@ -20,16 +32,16 @@ async function getAllIncubators(hospital_id) {
     },
   });
 
-  return allIncubators;
+  return res.status(200).json({ hospitalIncubators });
 }
 
+async function getIncubator(req, res) {
+  const { hospitalId, incubatorId } = matchedData(req);
 
-async function getIncubator(payload) {
-  const { hospital_id, incubator_id } = payload;
   const incubator = await prisma.incubator.findUnique({
     where: {
-      id: incubator_id,
-      hospital_id: hospital_id,
+      id: incubatorId,
+      hospital_id: hospitalId,
     },
     select: {
       id: true,
@@ -41,131 +53,123 @@ async function getIncubator(payload) {
   });
 
   if (incubator === null) {
-    return {
-      error: {
-        code: 404,
-        msg: 'Resource Not Found'
-      }
-    }
+    return notFoundHandler(res);
   }
 
-  return incubator;;
+  return res.status(200).json({ ...incubator });
 }
 
-async function checkIncubatorName(hospitalId, name) {
-  const existing = await prisma.incubator.findFirst({
-    where: {
-      hospital_id: hospitalId,
-      name: name,
-    },
-  });
+async function createIncubator(req, res) {
+  const {
+    name,
+    type,
+    status,
+    rentPerDay,
+    hospitalId
+  } = matchedData(req);
 
-  if (existing) {
-    const error = new Error('An Incubator with that name already exists');
-    error.code = 409;
-    throw error;
-  }
-}
-
-
-async function createIncubator(payload) {
-  const { hospital_id, name } = payload;
   try {
-    await checkIncubatorName(hospital_id, name);
     const newIncubator = await prisma.incubator.create({
-data: payload
+      data: {
+        name: name,
+        type: type,
+        status: status,
+        rent_per_day: rentPerDay,
+        hospital_id: hospitalId,
+      },
     });
 
-    return { msg: 'Incubator created successfully' };
+    return res.status(200).json({ ...newIncubator });
   } catch (err) {
-    if (err.code === 'P2003') {
-      return {
-        error: {
-          code: 422,
-          msg: 'The request cannot be processed due to a foreign key constraint violation'
-        }
-      }
-    } else if (err.code === 409) {
-      return{
-        error: {
-          code: err.code,
-          msg: err.message
-        }
-      }
-    }
-
-    throw err;
+    console.error(err);
+    return internalErrorHandler(res);
   }
 }
 
 
-async function updateIncubator(payload) {
-  const { incubator_id, hospital_id, ...data } = payload;
+async function updateIncubator(req, res) {
+  const {
+    incubatorId,
+    name,
+    type,
+    status,
+    rentPerDay,
+    hospitalId
+  } = matchedData(req);
+
   try {
-    if (data.name) {
-      await checkIncubatorName(hospital_id, data.name);
-    }
     const updatedIncubator = await prisma.incubator.update({
       where: {
-        id: incubator_id,
-        hospital_id: hospital_id
+        id: incubatorId,
+        hospital_id: hospitalId
       },
-      data: data,
+      data: {
+        name: name,
+        type: type,
+        status: status,
+        rent_per_day: rentPerDay,
+      },
     });
 
-    return { msg: 'Incubator updated successfully' };
+    return res.status(200).json({ ...updatedIncubator });
   } catch(err) {
     if (err.code === 'P2025') {
-      return {
-        error: {
-          code: 404,
-          msg: 'Resource Not Found'
-        }
-      }
-    } else if (err.code === 409) {
-      return {
-        error: {
-          code: err.code,
-          msg: err.message
-        }
-      }
+      return notFoundHandler(res);
+    } else {
+      console.error(err);
+      return internalErrorHandler(res);
     }
-
-    throw err;
   }
 }
 
 
-async function deleteIncubator(payload) {
-  const { hospital_id, incubator_id } = payload;
+async function deleteIncubator(req, res) {
+  const { hospitalId, incubatorId } = matchedData(req);
   try {
     const deletedIncubator = await prisma.incubator.delete({
       where: {
-        id: incubator_id,
-        hospital_id,
+        id: incubatorId,
+        hospital_id: hospitalId,
       },
     });
 
-    return { msg: 'Incubator deleted successfully' };
+    return res.status(200).json({ ...deletedIncubator });
   } catch(err) {
     if (err.code === 'P2025') {
-      return {
-        error: {
-          code: 404,
-          msg: 'Resource Not Found'
-        }
-      }
+      return notFoundHandler(res);
+    } else {
+      console.error(err);
+      return internalErrorHandler(res);
     }
-
-    throw err;
   }
+}
+
+async function checkIncubatorName(req, res, next) {
+  const { hospitalId, name } = matchedData(req);
+
+  const existing = await prisma.incubator.findFirst({
+    where: {
+      AND: [
+        { hospital_id: hospitalId },
+        { name: name },
+      ],
+    },
+  });
+
+  if (name && existing) {
+    return conflictErrorHandler(res);
+  }
+
+  next();
 }
 
 
 export {
-  getAllIncubators,
+  getIncubators,
+  getHospitalIncubators,
   getIncubator,
   createIncubator,
   updateIncubator,
-  deleteIncubator
+  deleteIncubator,
+  checkIncubatorName,
 }

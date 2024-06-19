@@ -4,7 +4,7 @@ import {
   reservationCreate,
   reservationUpdate,
   reservationId,
-  parentId
+  userId
 } from '../validation/reservation.validation.js';
 import {
   validate
@@ -14,6 +14,7 @@ import {
 } from '../middlewares/authorization.js';
 import {
   getReservations,
+  getUserReservations,
   getReservation,
   createReservation,
   updateReservation,
@@ -23,26 +24,32 @@ import {
 
 const router = express.Router();
 
-router.use(authorizeParent);
-
 router.get(
-  '/',
-  checkSchema(parentId),
-  validate,
+  '/all',
   getReservations
 );
 
 router.get(
+  '/',
+  authorizeParent,
+  checkSchema(userId),
+  validate,
+  getUserReservations
+);
+
+router.get(
   '/:reservationId',
+  authorizeParent,
+  checkSchema(userId),
   checkSchema(reservationId),
-  checkSchema(parentId),
   validate,
   getReservation
 );
 
 router.post(
   '/',
-  checkSchema(parentId),
+  authorizeParent,
+  checkSchema(userId),
   checkSchema(reservationCreate),
   validate,
   createReservation
@@ -50,8 +57,9 @@ router.post(
 
 router.patch(
   '/:reservationId',
+  authorizeParent,
+  checkSchema(userId),
   checkSchema(reservationId),
-  checkSchema(parentId),
   checkSchema(reservationUpdate),
   validate,
   updateReservation
@@ -59,8 +67,9 @@ router.patch(
 
 router.delete(
   '/:reservationId',
+  authorizeParent,
+  checkSchema(userId),
   checkSchema(reservationId),
-  checkSchema(parentId),
   validate,
   deleteReservation
 );
