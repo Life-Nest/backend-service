@@ -20,7 +20,7 @@ const searchParams = {
     },
     escape: true,
   },
-  page: {
+  cursor: {
     isInt: {
       errorMessage: 'Page number must be an integer',
     },

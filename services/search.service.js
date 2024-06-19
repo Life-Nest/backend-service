@@ -33,7 +33,7 @@ async function searchHospital(req, res) {
     longitude,
     latitude,
     city,
-    page
+    cursor
   } = matchedData(req);
 
   if (!(longitude && latitude)) {
@@ -51,6 +51,7 @@ async function searchHospital(req, res) {
 
   const hospitals = await prisma.hospital.findMany({
     select: {
+      id: true,
       name: true,
       email: true,
       type: true,
@@ -90,22 +91,19 @@ async function searchHospital(req, res) {
   }
   const sortedHospitals = filteredHospitals.sort(compareDistance);
 
-  const start = page * 3;
-  const end = start + 3;
-  const result = filteredHospitals.slice(start, end);
-
-  const requestedPageResults = result.map((obj) => {
-    const { incubators, distance, ...rest } = obj;
-    return rest;
-  });
-
-  if (requestedPageResults.length === 0) {
+  if (sortedHospitals.length === 0) {
     return res.status(204).json();
   }
 
+  const hospital = sortedHospitals[cursor];
+
   return res.status(200).json({
-    hospitals: requestedPageResults,
-    message: 'Success'
+    id: hospital.id,
+    name: hospital.name,
+    type: hospital.type,
+    phone_number: hospital.phone_number,
+    city: hospital.city,
+    address: hospital.address
   });
 }
 
