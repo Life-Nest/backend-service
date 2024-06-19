@@ -22,7 +22,20 @@ app.use('/reservations', reservationRoutes);
 app.use('/hospitals', searchRoute);
 
 app.get('/', (req, res) => {
-  res.status(200).json({ msg: "Incubator API root endpoint" });
+  res.status(200).json({
+    "name": "LifeNest API",
+    "version": "1.0.0",
+    "description": "This is a sample API that serves incubators organizing and reservation system.",
+    "endpoints": {
+      "/user": "Retrieve information about users",
+      "/reservations": "Manage reservations",
+      "/hospital": "Retrieve information about hospitals",
+      "/incubators": "Manage incubator resources",
+      "/staff": "Retrieve information about staff"
+    },
+    "documentation": "https://trello.com/b/1RDIsdvd/api-documentation",
+    "status": "API is up and running"
+  });
 });
 
 app.all('*', (req, res) => {
