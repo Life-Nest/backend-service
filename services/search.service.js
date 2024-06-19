@@ -36,9 +36,6 @@ async function searchHospital(req, res) {
     page
   } = matchedData(req);
 
-  console.log(`Longitude Parameter ${longitude}`);
-  console.log(`Latitude Parameter ${latitude}`);
-
   if (!(longitude && latitude)) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -50,12 +47,7 @@ async function searchHospital(req, res) {
 
     longitude = user.longitude;
     latitude = user.latitude;
-
-    console.log(`User Longitude ${longitude} => ${typeof longitude}`);
-    console.log(`User Latitude ${latitude} => ${typeof latitude}`);
   }
-
-  console.log('============================================================================');
 
   const hospitals = await prisma.hospital.findMany({
     select: {
@@ -88,55 +80,27 @@ async function searchHospital(req, res) {
     );
   });
 
-  console.log("Hospitals");
-  console.log(hospitals);
-  hospitals.map(hospital => console.log(hospital.incubators));
-  console.log('============================================================================');
-
   const filterByAvailability = hospital => {
     return hospital.incubators.length !== 0;
   }
   const filteredHospitals = hospitals.filter(filterByAvailability);
-
-  console.log("Filtered Hospitals");
-  console.log(filteredHospitals);
-  filteredHospitals.map(hospital => console.log(hospital.incubators));
-  console.log('============================================================================');
 
   const compareDistance = (a, b) => {
     return a.distance - b.distance;
   }
   const sortedHospitals = filteredHospitals.sort(compareDistance);
 
-  console.log("Sorted Hospitals");
-  console.log(sortedHospitals);
-  sortedHospitals.map(hospital => console.log(hospital.incubators));
-  console.log('============================================================================');
-
   const start = page * 3;
   const end = start + 3;
   const result = filteredHospitals.slice(start, end);
-
-  console.log("Result Page");
-  console.log(result);
-  result.map(hospital => console.log(hospital.incubators));
-  console.log('============================================================================');
 
   const requestedPageResults = result.map((obj) => {
     const { incubators, distance, ...rest } = obj;
     return rest;
   });
 
-  console.log("Trimmed Result Page");
-  console.log(requestedPageResults);
-  console.log('============================================================================');
-  console.log('============================================================================');
-
   if (requestedPageResults.length === 0) {
-    return res.status(204).json({
-      hospitals: requestedPageResults,
-      message: 'No more hospitals available',
-    });
+    return res.status(204).json();
   }
 
   return res.status(200).json({
