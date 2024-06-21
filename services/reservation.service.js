@@ -1,3 +1,4 @@
+import { WebSocket } from 'ws';
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
 import {
@@ -5,6 +6,10 @@ import {
   internalErrorHandler,
   conflictErrorHandler
 } from '../middlewares/errorHandlers.js';
+import {
+  connectedStaff,
+  connectedParents
+} from '../index.js';
 
 
 const prisma = new PrismaClient();
@@ -116,7 +121,18 @@ async function createReservation(req, res) {
         hospital_id: hospitalId,
       },
     });
-    
+
+    connectedStaff.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          JSON.stringify({
+            type: 'newReservation',
+            reservation
+          })
+        );
+      }
+    });
+
     return res.status(200).json({ ...reservation });
   } catch (err) {
     console.error(err);

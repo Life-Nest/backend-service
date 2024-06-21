@@ -23,26 +23,35 @@ const wss = new WebSocketServer({ server });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const connectedClients = new Map();
-let id = 0;
+export const connectedStaff = new Map();
+export const connectedParents = new Map();
 
 wss.on('connection', (ws, req) => {
   ws.on('error', console.error);
 
-  connectedClients.set(id, ws);
-  id = id + 1;
-
   console.log('Connection Established');
-  //console.log(connectedClients);
-  //console.log(wss.clients);
 
-  ws.on('close', () => console.log('Client has disconnected!'));
+  ws.on('close', () => {
+    console.log('Client has disconnected!');
+    switch (ws.role) {
+      case 'staff':
+        connectedStaff.delete(ws.id);
+        break;
+      case 'parent':
+        connectedParents.delete(ws.id);
+        break;
+      default:
+        console.log('Connected Maps Does not mainatained properly');
+        break;
+    }
+  });
 
   ws.on('message', message => {
     try {
       const parsedMessage = JSON.parse(message);
 
       if (parsedMessage.type === 'authorization') {
+        const { token } = parsedMessage;
         if (!token && token === '') {
           ws.send(
             JSON.stringify({
@@ -54,17 +63,49 @@ wss.on('connection', (ws, req) => {
           );
         }
 
-        ws.send(JSON.stringify({ type: 'authorization', status: 'success' }));
-
-        console.log(`Received message: ${message}`);
-        console.log('Parsed message:');
-        console.log(parsedMessage);
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const { id, role, hospitalId } = decodedToken;
+        if (role === 'staff') {
+          ws.id = id;
+          ws.role = role;
+          ws.hospitalId = hospitalId;
+          connectedStaff.set(id, ws);
+          ws.send(
+            JSON.stringify({
+              type: 'authorization',
+              status: 'success'
+            })
+          );
+          console.log(connectedStaff);
+        } else if (role === 'parent') {
+          ws.id = id;
+          ws.role = role;
+          connectedParents.set(id, ws);
+          ws.send(
+            JSON.stringify({
+              type: 'authorization',
+              status: 'success'
+            })
+          );
+          console.log(connectedParents);
+        } else {
+          ws.send(
+            JSON.stringify({
+              error: {
+                message: 'Forbidden',
+                code: 403
+              }
+            })
+          );
+        }
       } else {
-        /*connectedClients.forEach((value, key) => {
-          if (value !== ws) {
-            value.send(`Message sent from client ${key}: ${message}`);
-          }
-        });*/
+        ws.send(
+          JSON.stringify({
+            error: {
+              message: 'Communication type not supported',
+            }
+          })
+        );
       }
     } catch (err) {
       if (err.name === 'SyntaxError') {
@@ -76,8 +117,25 @@ wss.on('connection', (ws, req) => {
             }
           })
         );
+      } else if (err.name === 'JsonWebTokenError') {
+        ws.send(
+          JSON.stringify({
+            error: {
+              message: 'Not valid token',
+              code: 401
+            }
+          })
+        );
       } else {
         console.error(err);
+        ws.send(
+          JSON.stringify({
+            error: {
+              message: 'Internal Server Error',
+              code: 500
+            }
+          })
+        );
       }
     }
   });
