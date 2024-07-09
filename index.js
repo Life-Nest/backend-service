@@ -17,11 +17,13 @@ import staffRoutes from './controllers/staff.controller.js';
 
 dotenv.config();
 
+const PORT = process.env.PORT || 3000;
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 export const connectedStaff = new Map();
 export const connectedParents = new Map();
@@ -153,34 +155,32 @@ app.use('/hospitals', searchRoute);
 
 app.get('/', (req, res) => {
   res.status(200).json({
-    "name": "LifeNest API",
-    "version": "1.0.0",
-    "description": "This is a sample API that serves incubators organizing and reservation system.",
-    "endpoints": {
-      "/user": "Retrieve information about users",
-      "/reservations": "Manage reservations",
-      "/hospital": "Retrieve information about hospitals",
-      "/incubators": "Manage incubator resources",
-      "/staff": "Retrieve information about staff"
+    'name': 'LifeNest API',
+    'version': '1.0.0',
+    'description': 'This is a sample API that serves incubators organizing and reservation system.',
+    'endpoints': {
+      '/user': 'Retrieve information about users',
+      '/reservations': 'Manage reservations',
+      '/hospital': 'Retrieve information about hospitals',
+      '/incubators': 'Manage incubator resources',
+      '/staff': 'Retrieve information about staff'
     },
-    "documentation": "https://trello.com/b/1RDIsdvd/api-documentation",
-    "status": "API is up and running"
+    'documentation': 'https://trello.com/b/1RDIsdvd/api-documentation',
+    'status': 'API is up and running'
   });
-});
-
-app.get('/client', (req, res) => {
-  res.sendFile('/ws-client.html', { root: __dirname });
 });
 
 app.all('*', (req, res) => {
   res.status(404).json({
     error: {
-      message: "Not Found",
+      message: 'Not Found',
       code: 404
     }
   });
 });
 
-server.listen(3000, () => {
-  console.log("server is running on port 3000");
+server.listen(PORT, () => {
+  console.log(`Server is up and running on port ${PORT}`);
+  console.log('Browse the client here:');
+  console.log(`http://localhost:${PORT}/client`);
 }); 
