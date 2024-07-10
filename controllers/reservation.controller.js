@@ -14,6 +14,7 @@ import {
 } from '../middlewares/authorization.js';
 import {
   getReservations,
+  deleteReservations,
   getUserReservations,
   getReservation,
   createReservation,
@@ -24,10 +25,17 @@ import {
 
 const router = express.Router();
 
+/* Temporary */
 router.get(
   '/all',
   getReservations
 );
+
+router.delete(
+  '/delete_all',
+  deleteReservations
+);
+/* Temporary */
 
 router.get(
   '/',
