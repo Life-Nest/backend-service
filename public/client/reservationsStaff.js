@@ -1,5 +1,16 @@
+const getURL = () => {
+  const api_domain = window.location.host;
+  let protocol
+  if (api_domain.split(':')[0] === 'localhost') {
+    protocol = 'http';
+  } else {
+    protocol = 'https';
+  }
+  return `${protocol}://${api_domain}`;
+}
+
 const getReservations = async () => {
-  const url = 'http://localhost:3000/hospital/reservations';
+  const url = `${getURL()}/hospital/reservations`;
   const options = {
     method: 'GET',
     headers: {
@@ -23,7 +34,7 @@ const getReservations = async () => {
 }
 
 const updateReservation = async (reservationId, status) => {
-  const url = `http://localhost:3000/hospital/reservations/${reservationId}`;
+  const url = `${getURL()}/hospital/reservations/${reservationId}`;
   const options = {
     method: 'PATCH',
     headers: {

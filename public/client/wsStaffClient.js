@@ -1,5 +1,7 @@
-const socket = new WebSocket('ws://localhost:3000');
+const url = `ws://${window.location.host}`;
+const socket = new WebSocket(url);
 const reservationsContainer = document.getElementById('reservations');
+
 const authorize = () => {
   const message = JSON.stringify({
     type: 'authorization',
