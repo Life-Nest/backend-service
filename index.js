@@ -12,6 +12,7 @@ import incubatorRoutes from './controllers/incubator.controller.js';
 import hospitalRoutes from './controllers/hospital.controller.js';
 import searchRoute from './controllers/search.controller.js';
 import reservationRoutes from './controllers/reservation.controller.js';
+import reservationsStaffRoutes from './controllers/reservationsStaff.controller.js';
 import staffRoutes from './controllers/staff.controller.js';
 
 
@@ -31,18 +32,18 @@ export const connectedParents = new Map();
 wss.on('connection', (ws, req) => {
   ws.on('error', console.error);
 
-  console.log('Connection Established');
-
   ws.on('close', () => {
-    console.log('Client has disconnected!');
     switch (ws.role) {
       case 'staff':
         connectedStaff.delete(ws.id);
+        console.log('Staff client has disconnected!');
         break;
       case 'parent':
         connectedParents.delete(ws.id);
+        console.log('Parent client has disconnected!');
         break;
       default:
+        console.log('Anonymus client leaved');
         console.log('Connected Maps Does not mainatained properly');
         break;
     }
@@ -72,24 +73,28 @@ wss.on('connection', (ws, req) => {
           ws.role = role;
           ws.hospitalId = hospitalId;
           connectedStaff.set(id, ws);
+          console.log('Staff connection established');
           ws.send(
             JSON.stringify({
               type: 'authorization',
-              status: 'success'
+              status: 'success',
+              message: 'Authorized as Staff'
             })
           );
-          console.log(connectedStaff);
+          //console.log(connectedStaff);
         } else if (role === 'parent') {
           ws.id = id;
           ws.role = role;
           connectedParents.set(id, ws);
+          console.log('Parent connection established');
           ws.send(
             JSON.stringify({
               type: 'authorization',
-              status: 'success'
+              status: 'success',
+              message: 'Authorized as Parent'
             })
           );
-          console.log(connectedParents);
+          //console.log(connectedParents);
         } else {
           ws.send(
             JSON.stringify({
@@ -151,6 +156,7 @@ app.use('/hospital', hospitalRoutes);
 app.use('/staff', staffRoutes); 
 app.use('/incubators', incubatorRoutes);
 app.use('/reservations', reservationRoutes);
+app.use('/hospital/reservations', reservationsStaffRoutes);
 app.use('/hospitals', searchRoute);
 
 app.get('/', (req, res) => {
