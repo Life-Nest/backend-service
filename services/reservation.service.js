@@ -6,19 +6,24 @@ import {
   internalErrorHandler,
   conflictErrorHandler
 } from '../middlewares/errorHandlers.js';
-import {
-  connectedStaff,
-  connectedParents
-} from '../index.js';
+import { connectedStaff } from '../index.js';
 
 
 const prisma = new PrismaClient();
 
+/* Temporary */
 async function getReservations(req, res) {
   const reservations = await prisma.reservation.findMany();
 
   return res.status(200).json({ reservations });
 }
+
+async function deleteReservations(req, res) {
+  const reservations = await prisma.reservation.deleteMany();
+
+  return res.status(200).json({ reservations });
+}
+/* Temporary */
 
 async function getUserReservations(req, res) {
   const { parentId } = matchedData(req);
@@ -225,6 +230,7 @@ async function deleteReservation(req, res) {
 
 export {
   getReservations,
+  deleteReservations,
   getUserReservations,
   getReservation,
   createReservation,
