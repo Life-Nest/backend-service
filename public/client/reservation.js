@@ -8,12 +8,25 @@ const babyWeight = reservationForm.elements.babyWeight;
 const birthHospital = reservationForm.elements.birthHospital;
 const birthDoctorName = reservationForm.elements.birthDoctorName;
 const birthDoctorPhone = reservationForm.elements.birthDoctorPhone;
-const hospitalId = 4;
+const hospitalId = reservationForm.elements.hospitalId;
+
+const getURL = () => {
+  const api_domain = window.location.host;
+  let protocol
+  if (api_domain.split(':')[0] === 'localhost') {
+    protocol = 'http';
+  } else {
+    protocol = 'https';
+  }
+  return `${protocol}://${api_domain}`;
+}
+
+console.log(getURL());
 
 const postJSON = async (data) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/reservations`,
+      `${getURL()}/reservations`,
       {
         method: "POST",
         headers: {
@@ -46,7 +59,7 @@ const submit = async (e) => {
     birthHospital: birthHospital.value,
     birthDoctorName: birthDoctorName.value,
     birthDoctorPhone: birthDoctorPhone.value,
-    hospitalId,
+    hospitalId: hospitalId.value,
   }
   await postJSON(formData);
 }

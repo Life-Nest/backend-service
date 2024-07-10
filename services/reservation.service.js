@@ -140,8 +140,17 @@ async function createReservation(req, res) {
 
     return res.status(200).json({ ...reservation });
   } catch (err) {
-    console.error(err);
-    return internalErrorHandler(res);
+    if (err.code === 'P2003') {
+      res.status(404).json({
+        error: {
+          message: 'Hospital Not Found',
+          code: 404
+        }
+      });
+    } else {
+      console.error(err);
+      return internalErrorHandler(res);
+    }
   }
 }
 
@@ -157,8 +166,7 @@ async function updateReservation(req, res) {
     birthDoctorName,
     birthDoctorPhone,
     parentId,
-    incubatorId,
-    hospitalId
+    incubatorId
   } = matchedData(req);
 
   try {
@@ -178,7 +186,6 @@ async function updateReservation(req, res) {
         birth_doctor_phone: birthDoctorPhone,
         parent_id: parentId,
         incubator_id: incubatorId,
-        hospital_id: hospitalId,
       },
       select: {
         id: true,
