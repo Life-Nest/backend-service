@@ -57,57 +57,32 @@
         font-size: 1.5rem;
       }
 
+      #messages {
+        color: green;
+        width: 50%;
+      }
+
+      .reservations {
+        width: 25%;
+      }
+
     </style>
   </head>
   <body>
     <h1>WebSocket App</h1>
 
-    <form class="form" name="loginForm">
-      <label>
-        <span>Email</span>
-        <input
-          type="text"
-          class="form-input"
-          name="email"
-          placeholder="JohnDoe@gmail.com"
-          autocomplete="on"
-        />
-      </label>
-      <label>
-        <span>Password</span>
-        <input
-          type="password"
-          class="form-input"
-          name="password"
-          placeholder="••••••••"
-        />
-      </label>
-      <div>
-        <label>
-          User
-          <input
-            type="radio"
-            name="role"
-            value="user"
-            checked
-          />
-        </label>
-        <label>
-          Staff
-          <input
-            type="radio"
-            name="role"
-            value="staff"
-          />
-        </label>
-      </div>
-      <input
-        id="submit-btn"
-        type="submit"
-        name="submit"
-        value="Login"
-      />
-    </form>
-    <script src="index.js"></script>
+    <div id="messages"></div>
+    <table class="reservations">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>status</th>
+        </tr>
+      </thead>
+      <tbody id="reservations">
+      </tbody>
+    </table>
+    <script src="reservationsStaff.js"></script>
+    <script src="wsStaffClient.js"></script>
   </body>
 </html>
