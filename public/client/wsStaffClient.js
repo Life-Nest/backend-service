@@ -1,5 +1,15 @@
-const url = `ws://${window.location.host}`;
-const socket = new WebSocket(url);
+const getWSURL = () => {
+  const api_domain = window.location.host;
+  let protocol
+  if (api_domain.split(':')[0] === 'localhost') {
+    protocol = 'ws';
+  } else {
+    protocol = 'wss';
+  }
+  return `${protocol}://${api_domain}`;
+}
+
+const socket = new WebSocket(getWSURL());
 const reservationsContainer = document.getElementById('reservations');
 
 const authorize = () => {
