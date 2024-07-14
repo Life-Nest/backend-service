@@ -13,6 +13,14 @@ const searchParams = {
     },
     toFloat: true,
   },
+  babyCase: {
+    optional: true,
+    isIn: {
+      options: [['Oxygen defficiency', 'Early birth', 'Jaudnice']],
+      errorMessage: 'Not available case option. \
+Choose between: Oxygen defficiency, Early birth, Jaudnice',
+    },
+  },
   city: {
     optional: true,
     isString: {

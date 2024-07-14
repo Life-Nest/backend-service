@@ -21,10 +21,11 @@ export const incubatorCreate = {
     notEmpty: {
       errorMessage: 'Should be not empty',
     },
-    isString: {
-      errorMessage: 'Should be a string',
+    isIn: {
+      options: [['Oxygen defficiency', 'Early birth', 'Jaudnice']],
+      errorMessage: 'Not available case option. \
+Choose between: Oxygen defficiency, Early birth, Jaudnice',
     },
-    escape: true,
   },
   status: {
     notEmpty: {

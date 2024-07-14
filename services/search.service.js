@@ -32,6 +32,7 @@ async function searchHospital(req, res) {
     userId,
     longitude,
     latitude,
+    babyCase,
     city,
     page
   } = matchedData(req);
@@ -59,6 +60,7 @@ async function searchHospital(req, res) {
       incubators: {
         where: {
           status: 'available',
+          type: babyCase,
         },
         select: {
           id: true,
