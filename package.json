@@ -1,13 +1,12 @@
 {
-  "name": "backend_2.0",
+  "name": "backend_service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "db": "sudo docker start 6c9a284ed80f"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
