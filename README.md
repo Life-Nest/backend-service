@@ -72,4 +72,4 @@ For detailed documentation on API endpoints, usage, and examples, please refer t
 
 ### License
 
-This project is licensed under the [`MIT License`](https://opensource.org/licenses/MIT).
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
